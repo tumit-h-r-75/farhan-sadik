@@ -6,7 +6,7 @@ Sections: hero, About (with skills and education), What I bring (strengths), Ser
 
 The design is editorial: warm paper sections, charcoal bands sampled from the portrait's studio backdrop, Instrument Serif headings, Manrope body text, DM Mono labels and a single terracotta accent.
 
-Motion: on tall desktop screens the hero stays pinned while the About section slides over it as a rounded sheet (with light parallax and dimming), the portrait wipes in, a light travels around the main button, the Exprovia band has flowing threads, Process has a cursor-reactive line field, and a faint film grain sits over the page. The header hides while scrolling down and returns when scrolling up. Everything falls back to still frames for visitors who prefer reduced motion.
+Motion: on tall desktop screens the hero stays pinned while the About section slides over it as a rounded sheet (with light parallax and dimming), the portrait wipes in, a light travels around the main button, the Exprovia band has flowing threads, Process has a cursor-reactive line field, and a faint film grain sits over the page. The header hides while scrolling down and returns when scrolling up. On desktop a bracket cursor locks onto links and buttons, the hero name reveals letter by letter, the section numbers carry a flowing gradient, and Exprovia's figures roll like an odometer. Everything falls back to still frames for visitors who prefer reduced motion.
 
 ## Run locally
 

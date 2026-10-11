@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { MotionConfig, motion, useInView, useReducedMotion, useScroll, useTransform } from "motion/react";
 import {
   ArrowDown,
@@ -29,7 +29,7 @@ import {
 } from "lucide-react";
 import { PROFILE, isKnown } from "@/data/profile";
 import BlurText from "@/components/react-bits/BlurText";
-import CountUp from "@/components/react-bits/CountUp";
+import Counter from "@/components/react-bits/Counter";
 import GlareHover from "@/components/react-bits/GlareHover";
 import LightRays from "@/components/react-bits/LightRays";
 import MagicBento from "@/components/react-bits/MagicBento";
@@ -39,6 +39,7 @@ import ScrollReveal from "@/components/react-bits/ScrollReveal";
 import ShinyText from "@/components/react-bits/ShinyText";
 import SpotlightCard from "@/components/react-bits/SpotlightCard";
 import StarBorder from "@/components/react-bits/StarBorder";
+import TargetCursor from "@/components/react-bits/TargetCursor";
 import Stepper, { Step } from "@/components/react-bits/Stepper";
 import Threads from "@/components/react-bits/Threads";
 import TiltedCard from "@/components/react-bits/TiltedCard";
@@ -88,7 +89,7 @@ const stepperTheme = {
 /** Scroll-linked depth for the hero, on wide screens with normal motion only. */
 function useHeroParallax() {
   const reducedMotion = useReducedMotion();
-  const [wide, setWide] = useState(false);
+  const [wide, setWide] = useState(() => window.matchMedia("(min-width: 901px)").matches);
   useEffect(() => {
     const media = window.matchMedia("(min-width: 901px)");
     const update = () => setWide(media.matches);
@@ -104,6 +105,7 @@ function useHeroParallax() {
   const dim = useTransform(scrollY, [0, 900], [0, 0.7]);
   const enabled = wide && !reducedMotion;
   return {
+    wide,
     copy: enabled ? { y: copyY, opacity: copyOpacity } : undefined,
     portrait: enabled ? { y: portraitY, scale: portraitScale } : undefined,
     dim: enabled ? { opacity: dim } : { opacity: 0 },
@@ -118,15 +120,15 @@ function Hero() {
       <div className="hero-rays" aria-hidden="true">
         <LightRays
           raysOrigin="top-center"
-          raysColor={ACCENT_BRIGHT}
-          raysSpeed={0.7}
-          lightSpread={0.9}
-          rayLength={1.5}
-          fadeDistance={1.1}
+          raysColor="#ffb08a"
+          raysSpeed={0.9}
+          lightSpread={1.15}
+          rayLength={2.2}
+          fadeDistance={1.3}
           followMouse
-          mouseInfluence={0.08}
-          noiseAmount={0.06}
-          distortion={0.04}
+          mouseInfluence={0.12}
+          noiseAmount={0.05}
+          distortion={0.06}
         />
       </div>
       <div className="shell hero-grid">
@@ -140,8 +142,8 @@ function Hero() {
               containerWidth="100%"
               imageHeight="100%"
               imageWidth="100%"
-              scaleOnHover={1.04}
-              rotateAmplitude={9}
+              scaleOnHover={1.05}
+              rotateAmplitude={12}
               showMobileWarning={false}
               showTooltip={false}
             />
@@ -161,14 +163,22 @@ function Hero() {
             </span>
           </Reveal>
           <h1 className="hero-title">
-            <BlurText text={first} delay={110} direction="bottom" stepDuration={0.32} initialDelay={0.2} />{" "}
+            <BlurText
+              text={first}
+              animateBy={parallax.wide ? "letters" : "words"}
+              delay={parallax.wide ? 45 : 110}
+              direction="bottom"
+              stepDuration={0.34}
+              initialDelay={0.2}
+            />{" "}
             <BlurText
               className="hero-title-accent"
               text={second}
-              delay={110}
+              animateBy={parallax.wide ? "letters" : "words"}
+              delay={parallax.wide ? 55 : 110}
               direction="bottom"
-              stepDuration={0.32}
-              initialDelay={0.42}
+              stepDuration={0.34}
+              initialDelay={parallax.wide ? 0.75 : 0.42}
             />
           </h1>
           <Reveal delay={0.5}>
@@ -186,9 +196,10 @@ function Hero() {
                 color="#ffe1d3"
                 trailColor={ACCENT_BRIGHT}
                 radius={6}
-                thickness={1.5}
-                duration={5}
-                glow={0.9}
+                thickness={2}
+                duration={4}
+                glow={1}
+                sparkle
               >
                 {PROFILE.hero.primaryCta} <ArrowUpRight size={18} aria-hidden="true" />
               </StarBorder>
@@ -334,11 +345,11 @@ function Strengths() {
           enableStars
           enableSpotlight
           enableBorderGlow
-          enableTilt={false}
+          enableTilt
           enableMagnetism
           clickEffect
-          spotlightRadius={320}
-          particleCount={10}
+          spotlightRadius={340}
+          particleCount={16}
           glowColor="255, 138, 92"
         />
       </Reveal>
@@ -366,9 +377,9 @@ function Services({ onDiscuss }: { onDiscuss: (service: string) => void }) {
                   className="service-card"
                   theme="light"
                   spotlightColor={ACCENT}
-                  intensity={0.45}
-                  borderGlow={0.8}
-                  spotlightSize={360}
+                  intensity={1}
+                  borderGlow={1}
+                  spotlightSize={380}
                   style={
                     {
                       "--spotlight-card-surface": "var(--card)",
@@ -522,23 +533,72 @@ function Experience() {
   );
 }
 
+/** Digit places for Counter, e.g. 350 -> [100, 10, 1], 4.9 -> [1, ".", 0.1]. */
+function placesFor(value: number): (number | ".")[] {
+  const text = value.toString();
+  const dot = text.indexOf(".");
+  return [...text].map((ch, i) => {
+    if (ch === ".") return ".";
+    const exponent = dot === -1 ? text.length - i - 1 : i < dot ? dot - i - 1 : -(i - dot);
+    return 10 ** exponent;
+  });
+}
+
+function useFigureSize() {
+  const [size, setSize] = useState(96);
+  useEffect(() => {
+    const update = () => {
+      const width = window.innerWidth;
+      setSize(width <= 640 ? 64 : Math.round(Math.min(112, Math.max(64, width * 0.07))));
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+  return size;
+}
+
+function RollingFigure({ value, fontSize }: { value: number; fontSize: number }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.6 });
+  const reducedMotion = useReducedMotion();
+  const places = useMemo(() => placesFor(value), [value]);
+  return (
+    <span ref={ref} className="figure-roll">
+      <Counter
+        value={inView || reducedMotion ? value : 0}
+        places={places}
+        fontSize={fontSize}
+        padding={6}
+        gap={0}
+        horizontalPadding={0}
+        borderRadius={0}
+        gradientHeight={0}
+        textColor="inherit"
+        fontWeight={400}
+      />
+    </span>
+  );
+}
+
 function Company() {
   const { id, eyebrow, heading, summary, teammate, logo, figuresLabel, figures, source } = PROFILE.companyPanel;
+  const figureSize = useFigureSize();
   return (
     <section id={id} className="company band-ink" aria-label={PROFILE.company}>
       <div className="company-threads" aria-hidden="true">
         <Threads
           color={ACCENT_BRIGHT}
           accentColor="#f3efe7"
-          amplitude={1.3}
-          distance={0.32}
-          lineCount={70}
-          thickness={0.6}
-          speed={0.45}
+          amplitude={1.7}
+          distance={0.36}
+          lineCount={80}
+          thickness={0.8}
+          speed={0.55}
           angle={-10}
-          brightness={1.1}
-          fade={0.35}
-          opacity={0.5}
+          brightness={1.3}
+          fade={0.3}
+          opacity={0.75}
           enableMouseInteraction
         />
       </div>
@@ -572,14 +632,16 @@ function Company() {
               <div key={figure.label}>
                 <dt>{figure.label}</dt>
                 <dd>
-                  <CountUp to={figure.value} duration={1.6} />
-                  {figure.suffix}
-                  {figure.rating && (
-                    <>
-                      <Star className="rating-star" size={26} aria-hidden="true" />
-                      <span className="sr-only"> out of 5</span>
-                    </>
-                  )}
+                  <span className="figure-visual" aria-hidden="true">
+                    <RollingFigure value={figure.value} fontSize={figureSize} />
+                    {figure.suffix}
+                    {figure.rating && <Star className="rating-star" size={26} />}
+                  </span>
+                  <span className="sr-only">
+                    {figure.value}
+                    {figure.suffix}
+                    {figure.rating ? " out of 5" : ""}
+                  </span>
                 </dd>
               </div>
             ))}
@@ -604,12 +666,12 @@ function Process() {
       className="process"
       background={
         <Waves
-          lineColor="rgba(23, 22, 20, 0.1)"
+          lineColor="rgba(200, 71, 31, 0.16)"
           backgroundColor="transparent"
-          waveSpeedX={0.0125}
-          waveSpeedY={0.005}
-          waveAmpX={36}
-          waveAmpY={18}
+          waveSpeedX={0.016}
+          waveSpeedY={0.006}
+          waveAmpX={44}
+          waveAmpY={22}
           xGap={14}
           yGap={36}
           friction={0.925}
@@ -770,7 +832,22 @@ export default function Portfolio() {
         Skip to content
       </a>
       <Header />
-      <Noise fixed opacity={0.045} fps={10} blendMode="overlay" contrast={0.5} zIndex={70} />
+      <Noise fixed opacity={0.06} fps={10} blendMode="overlay" contrast={0.55} zIndex={70} />
+      <TargetCursor
+        targetSelector="a, button, summary, select, input, textarea"
+        cursorColor="#ffffff"
+        blendMode="difference"
+        spinDuration={3}
+        hoverDuration={0.22}
+        size={34}
+        cornerSize={11}
+        thickness={2}
+        padding={6}
+        dotSize={5}
+        showLabel={false}
+        parallaxOn
+        clickEffect
+      />
       <main id="main-content">
         <div id="top" className="curtain">
           <Hero />

@@ -563,7 +563,7 @@ a:hover > .link-arrow {
   position: absolute;
   inset: -6%;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 138, 92, 0.16), rgba(45, 46, 50, 0.5) 45%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 138, 92, 0.32), rgba(45, 46, 50, 0.55) 45%, transparent 70%);
   filter: blur(40px);
   animation: breathe 7s ease-in-out infinite;
 }
@@ -1083,7 +1083,7 @@ a:hover > .link-arrow {
 }
 .company-figures dd {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   font-family: var(--serif);
   font-size: clamp(64px, 7vw, 112px);
   line-height: 0.9;
@@ -1183,7 +1183,7 @@ a:hover > .link-arrow {
   position: absolute;
   inset: 0;
   z-index: -1;
-  opacity: 0.6;
+  opacity: 0.9;
   pointer-events: none;
 }
 .contact .shell {
@@ -1793,6 +1793,24 @@ a:hover > .link-arrow {
   padding: 0 52px 26px 56px;
   font-size: 16px;
   color: var(--text-soft);
+}
+
+/* ---------- Rolling figures, gradient numbers, custom cursor ---------- */
+
+.figure-visual {
+  display: inline-flex;
+  align-items: center;
+}
+.section-label-number .gradient-text {
+  padding-right: 0.06em;
+}
+/* The custom cursor sits below the modal's top layer, so the dialog keeps the system cursor. */
+dialog[open],
+dialog[open] * {
+  cursor: auto !important;
+}
+dialog[open] :is(a, button, select, label) {
+  cursor: pointer !important;
 }
 
 /* ---------- Depth and motion ---------- */

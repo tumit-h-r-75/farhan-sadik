@@ -10,6 +10,7 @@ import { ArrowUpRight, Menu, X } from "lucide-react";
 import AnimatedContent from "@/components/react-bits/AnimatedContent";
 import BlurText from "@/components/react-bits/BlurText";
 import DecryptedText from "@/components/react-bits/DecryptedText";
+import GradientText from "@/components/react-bits/GradientText";
 import Magnet from "@/components/react-bits/Magnet";
 import { PROFILE, type Heading } from "@/data/profile";
 
@@ -48,9 +49,10 @@ export function Reveal({
   return (
     <AnimatedContent
       className={className}
-      distance={36}
-      duration={0.9}
+      distance={60}
+      duration={1}
       ease="power3.out"
+      scale={0.97}
       threshold={0.12}
       delay={delay}
     >
@@ -81,11 +83,26 @@ export function SplitHeading({
   );
 }
 
-export function SectionLabel({ number, children }: { number: string; children: string }) {
+export function SectionLabel({
+  number,
+  children,
+  bright = false,
+}: {
+  number: string;
+  children: string;
+  bright?: boolean;
+}) {
   return (
     <p className="section-label">
       <span className="section-label-number" aria-hidden="true">
-        {number}
+        <GradientText
+          colors={bright ? ["#ff8a5c", "#ffd0b8", "#ff6a3d"] : ["#c8471f", "#ff8a5c", "#a63a16"]}
+          animationSpeed={5}
+          direction="diagonal"
+          scale={2}
+        >
+          {number}
+        </GradientText>
       </span>
       <DecryptedText
         text={children}
@@ -343,9 +360,11 @@ export function Header() {
           ))}
         </nav>
         <div className="header-actions">
-          <a className="button button-accent button-small header-cta" href="#contact">
-            Let's talk <ArrowUpRight size={15} aria-hidden="true" />
-          </a>
+          <Magnetic>
+            <a className="button button-accent button-small header-cta" href="#contact">
+              Let's talk <ArrowUpRight size={15} aria-hidden="true" />
+            </a>
+          </Magnetic>
           <button
             ref={toggleRef}
             className="menu-toggle"

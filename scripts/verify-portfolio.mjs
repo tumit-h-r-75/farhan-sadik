@@ -151,7 +151,12 @@ try {
     await page.locator(".hero-lead").evaluate((element) => getComputedStyle(element.parentElement).visibility),
     "visible",
   );
-  assert.equal((await page.locator(".company-figures dd").first().textContent()).trim(), "350+");
+  assert.deepEqual(
+    await page.locator(".company-figures dd .sr-only").allTextContents(),
+    ["350+", "20+", "4.9 out of 5"],
+    "Company figures for screen readers",
+  );
+  assert.equal(await page.locator(".section-label-number .gradient-text").count(), 7, "Gradient section numbers");
   const companyLogo = page.locator(".company-logo");
   await companyLogo.scrollIntoViewIfNeeded();
   assert.ok(
@@ -350,6 +355,22 @@ try {
   await animatedPage.waitForTimeout(500);
   await animatedPage.screenshot({ path: artifact("desktop-hover-service.png") });
   assert.equal(await animatedPage.locator(".hero-cta canvas").count(), 1, "StarBorder canvas missing");
+  // Custom cursor: its corners frame the call to action when hovered.
+  await animatedPage.evaluate(() => window.scrollTo(0, 0));
+  await animatedPage.waitForTimeout(600);
+  const cta = await animatedPage.locator(".hero-cta").boundingBox();
+  await animatedPage.mouse.move(400, 300);
+  await animatedPage.mouse.move(cta.x + cta.width / 2, cta.y + cta.height / 2, { steps: 10 });
+  await animatedPage.waitForTimeout(800);
+  assert.equal(await animatedPage.locator(".target-cursor").count(), 1, "Custom cursor missing");
+  const cornerXs = await animatedPage
+    .locator(".target-cursor__corner")
+    .evaluateAll((corners) => corners.map((corner) => Number(corner.style.transform.match(/translate3d\(([-\d.]+)px/)[1])));
+  assert.ok(
+    Math.min(...cornerXs) < cta.x && Math.max(...cornerXs) > cta.x + cta.width,
+    `Cursor corners do not frame the button (${cornerXs.join(", ")})`,
+  );
+  await animatedPage.screenshot({ path: artifact("desktop-cursor-on-cta.png") });
   assert.equal(await animatedPage.locator(".noise").count(), 1, "Noise overlay missing");
   assert.equal(
     await animatedPage.locator(".hero").evaluate((element) => getComputedStyle(element).position),
@@ -371,7 +392,7 @@ try {
   await animatedPage.mouse.wheel(0, -300);
   await animatedPage.waitForTimeout(900);
   assert.ok((await headerBottom()) > 40, "Header did not return on scroll up");
-  checkpoint("hero pinned, StarBorder and grain render, header hides on scroll down and returns on scroll up");
+  checkpoint("hero pinned, StarBorder, grain and custom cursor work, header hides on scroll down and returns on scroll up");
 
   // Strengths: the heading rotates once it is in view, and the bento cards glow near the cursor.
   await animatedPage.locator("#strengths .split-heading").scrollIntoViewIfNeeded();
@@ -393,6 +414,11 @@ try {
   await animatedPage.locator("#exprovia").scrollIntoViewIfNeeded();
   await animatedPage.waitForTimeout(900);
   assert.equal(await animatedPage.locator(".company-threads canvas").count(), 1, "Threads canvas missing");
+  await animatedPage.locator(".company-figures").scrollIntoViewIfNeeded();
+  await animatedPage.waitForTimeout(400);
+  await animatedPage.screenshot({ path: artifact("desktop-figures-rolling.png") });
+  await animatedPage.waitForTimeout(2200);
+  await animatedPage.screenshot({ path: artifact("desktop-figures-settled.png") });
   await animatedPage.screenshot({ path: artifact("desktop-company-animated.png") });
   await animatedPage.locator("#process").scrollIntoViewIfNeeded();
   await animatedPage.mouse.move(400, 500);

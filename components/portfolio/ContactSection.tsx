@@ -98,16 +98,18 @@ export function ContactSection({
       <div className="contact-particles" aria-hidden="true">
         <Particles
           particleColors={["#ff8a5c", "#f6f2ea", "#a39f98"]}
-          particleCount={260}
+          particleCount={340}
           particleSpread={10}
-          speed={0.08}
-          particleBaseSize={110}
+          speed={0.1}
+          particleBaseSize={150}
           sizeRandomness={1}
           alphaParticles
         />
       </div>
       <div className="shell">
-        <SectionLabel number="07">Contact</SectionLabel>
+        <SectionLabel number="07" bright>
+          Contact
+        </SectionLabel>
         <div className="contact-grid">
           <div className="contact-intro">
             <h2 className="contact-title">

@@ -12,7 +12,6 @@ These components come from [React Bits](https://reactbits.dev/) by David Haz, do
 | ScrollReveal | About statement | Span inside the heading, cleanup scoped with `gsap.context().revert()`, static for reduced motion |
 | AnimatedContent | Scroll entrances (the `Reveal` helper in `components/portfolio/Chrome.tsx`) | Shown immediately for reduced motion |
 | SpotlightCard | Service cards | None |
-| CountUp | Exprovia figures | Final value straight away for reduced motion |
 | Stepper | Process steps | lucide-react icons (Check, ArrowLeft, ArrowRight) instead of Hugeicons |
 | GlareHover | WhatsApp, LinkedIn and email cards | None |
 | Particles | Contact background | Pauses off screen (IntersectionObserver), one still frame for reduced motion |
@@ -22,6 +21,9 @@ These components come from [React Bits](https://reactbits.dev/) by David Haz, do
 | Waves | Cursor-reactive line field behind Process | Fresh bounding box for the pointer (it went stale after scrolling), pauses off screen, one still frame for reduced motion, broken cursor-dot CSS removed |
 | Noise | Very light animated film grain over the whole page | None (static for reduced motion on its own) |
 | MagicBento | "What I bring" strength cards (spotlight, border glow, particles, magnetism) | Cards from a `cards` prop with icons instead of demo data, h3 titles, no animation for reduced motion, CSS scoped (no global `:root` variables or fixed purple) |
+| Counter | Exprovia figures roll like an odometer | None (the page starts it in view, shows the final value for reduced motion, and gives screen readers the plain number) |
+| GradientText | Flowing gradient on the section numbers | None |
+| TargetCursor | Bracket cursor that locks onto links and buttons (mouse only) | Spring integrator uses small sub-steps, so slow frames no longer throw the corners off screen |
 | RotatingText | Rotating end of the "What I bring" heading | None (the page starts it only in view, plays it once, and shows plain text for reduced motion) |
 
 LightRays and Particles need `ogl`. StarBorder, Threads (WebGL2), Waves and Noise have no dependencies. ScrollReveal, AnimatedContent and MagicBento need `gsap`. The others use `motion` or plain CSS.
