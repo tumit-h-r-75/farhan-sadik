@@ -1,11 +1,12 @@
-import { useEffect, useState, type CSSProperties } from "react";
-import { MotionConfig, motion, useReducedMotion, useScroll, useTransform } from "motion/react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { MotionConfig, motion, useInView, useReducedMotion, useScroll, useTransform } from "motion/react";
 import {
   ArrowDown,
   ArrowDownRight,
   ArrowUp,
   ArrowUpRight,
   Bot,
+  BriefcaseBusiness,
   ChevronDown,
   Cloud,
   CodeXml,
@@ -14,18 +15,26 @@ import {
   Globe,
   GraduationCap,
   Handshake,
+  Headset,
+  HeartHandshake,
   Languages,
   MapPin,
   MessagesSquare,
+  Plus,
   RefreshCw,
+  SquareTerminal,
   Star,
   Users,
+  Workflow,
 } from "lucide-react";
 import { PROFILE, isKnown } from "@/data/profile";
 import BlurText from "@/components/react-bits/BlurText";
 import CountUp from "@/components/react-bits/CountUp";
+import GlareHover from "@/components/react-bits/GlareHover";
 import LightRays from "@/components/react-bits/LightRays";
+import MagicBento from "@/components/react-bits/MagicBento";
 import Noise from "@/components/react-bits/Noise";
+import RotatingText from "@/components/react-bits/RotatingText";
 import ScrollReveal from "@/components/react-bits/ScrollReveal";
 import ShinyText from "@/components/react-bits/ShinyText";
 import SpotlightCard from "@/components/react-bits/SpotlightCard";
@@ -38,6 +47,7 @@ import { ContactSection } from "./ContactSection";
 import {
   ExternalLink,
   Header,
+  LinkedInIcon,
   Magnetic,
   RailSection,
   Reveal,
@@ -52,6 +62,14 @@ const ACCENT_BRIGHT = "#ff8a5c"; // the same hue, lifted for the charcoal bands
 
 const serviceIcons = { code: CodeXml, database: Database, globe: Globe, cloud: Cloud, bot: Bot };
 const processIcons = { call: MessagesSquare, proposal: FileText, kickoff: Handshake, updates: RefreshCw };
+const strengthIcons = {
+  languages: Languages,
+  relationship: HeartHandshake,
+  coordination: Workflow,
+  technical: SquareTerminal,
+  support: Headset,
+  business: BriefcaseBusiness,
+};
 
 // Stepper theme variables, matched to the paper palette.
 const stepperTheme = {
@@ -196,7 +214,7 @@ function Hero() {
 }
 
 function About() {
-  const { statement, paragraph, skills, education, community, languages } = PROFILE.about;
+  const { statement, paragraph, skills, education, community } = PROFILE.about;
   return (
     <RailSection id="about" number="01" label="About" className="about">
       <ScrollReveal
@@ -222,7 +240,7 @@ function About() {
           </ul>
         </Reveal>
       </div>
-      <div id="education" className="background-grid">
+      <div id="education" className="education-block">
         <Reveal>
           <h3 className="column-label">
             <GraduationCap size={16} strokeWidth={1.6} aria-hidden="true" />
@@ -230,55 +248,100 @@ function About() {
           </h3>
           <ul>
             {education.map((item) => (
-              <li className="ledger-row" key={item.institution}>
+              <li className="education-row" key={item.institution}>
                 {isKnown(item.years) && <span className="ledger-meta">{item.years}</span>}
                 <div>
                   <h4>{item.institution}</h4>
                   {isKnown(item.degree) && <p>{item.degree}</p>}
                 </div>
+                {item.note && <p className="education-note">{item.note}</p>}
               </li>
             ))}
           </ul>
         </Reveal>
-        <Reveal delay={0.1} className="background-stack">
-          {community.length > 0 && (
-            <div>
-              <h3 className="column-label">
-                <Users size={16} strokeWidth={1.6} aria-hidden="true" />
-                Community & leadership
-              </h3>
-              <ul>
-                {community.map((item) => (
-                  <li className="ledger-row" key={item.name}>
-                    <span className="ledger-meta">{item.role}</span>
-                    <div>
-                      <h4>{item.name}</h4>
-                      <p>{item.association}</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-          <div>
+        {community.length > 0 && (
+          <Reveal delay={0.1}>
             <h3 className="column-label">
-              <Languages size={16} strokeWidth={1.6} aria-hidden="true" />
-              Languages
+              <Users size={16} strokeWidth={1.6} aria-hidden="true" />
+              Community & leadership
             </h3>
             <ul>
-              {languages.map((item, index) => (
-                <li className="ledger-row" key={item.name}>
-                  <span className="ledger-meta">0{index + 1}</span>
+              {community.map((item) => (
+                <li className="education-row" key={item.name}>
+                  <span className="ledger-meta">{item.role}</span>
                   <div>
                     <h4>{item.name}</h4>
-                    <p>{item.level}</p>
+                    <p>{item.association}</p>
                   </div>
                 </li>
               ))}
             </ul>
-          </div>
+          </Reveal>
+        )}
+      </div>
+    </RailSection>
+  );
+}
+
+function Strengths() {
+  const { heading, rotating, intro, items } = PROFILE.strengths;
+  const rotatingRef = useRef<HTMLSpanElement>(null);
+  const inView = useInView(rotatingRef, { amount: 0.8 });
+  const reducedMotion = useReducedMotion();
+  const cards = items.map((item) => {
+    const Icon = strengthIcons[item.icon];
+    return {
+      color: "#16171c",
+      label: item.label,
+      title: item.title,
+      description: item.text,
+      icon: <Icon size={20} strokeWidth={1.5} aria-hidden="true" />,
+    };
+  });
+  return (
+    <RailSection id="strengths" number="02" label="Strengths" className="strengths">
+      <div className="section-head">
+        <h2 className="split-heading">
+          <BlurText text={heading} delay={70} direction="bottom" stepDuration={0.3} />{" "}
+          <span ref={rotatingRef} className="dim strengths-rotating">
+            {reducedMotion ? (
+              rotating[0]
+            ) : (
+              <RotatingText
+                texts={rotating}
+                auto={inView}
+                loop={false}
+                rotationInterval={2400}
+                splitBy="characters"
+                staggerDuration={0.018}
+                staggerFrom="first"
+                transition={{ type: "spring", damping: 28, stiffness: 320 }}
+                mainClassName="strengths-rotating-text"
+                splitLevelClassName="strengths-rotating-word"
+              />
+            )}
+          </span>
+        </h2>
+        <Reveal delay={0.1}>
+          <p>{intro}</p>
         </Reveal>
       </div>
+      <Reveal>
+        <MagicBento
+          cards={cards}
+          className="strengths-bento"
+          textAutoHide={false}
+          enableStars
+          enableSpotlight
+          enableBorderGlow
+          enableTilt={false}
+          enableMagnetism
+          clickEffect
+          spotlightRadius={320}
+          particleCount={10}
+          glowColor="255, 138, 92"
+        />
+      </Reveal>
     </RailSection>
   );
 }
@@ -286,7 +349,7 @@ function About() {
 function Services({ onDiscuss }: { onDiscuss: (service: string) => void }) {
   const { heading, intro, items } = PROFILE.services;
   return (
-    <RailSection id="services" number="02" label="Services" className="services band-paper-deep">
+    <RailSection id="services" number="03" label="Services" className="services band-paper-deep">
       <div className="section-head">
         <SplitHeading heading={heading} />
         <Reveal delay={0.1}>
@@ -347,9 +410,9 @@ function Services({ onDiscuss }: { onDiscuss: (service: string) => void }) {
 }
 
 function Experience() {
-  const { heading, intro, entries } = PROFILE.experience;
+  const { heading, intro, entries, posts } = PROFILE.experience;
   return (
-    <RailSection id="experience" number="03" label="Experience" className="experience">
+    <RailSection id="experience" number="04" label="Experience" className="experience">
       <div className="section-head">
         <SplitHeading heading={heading} />
         <Reveal delay={0.1}>
@@ -390,6 +453,15 @@ function Experience() {
                         </span>
                       </div>
                       {role.description && <p>{role.description}</p>}
+                      {role.highlights && (
+                        <ul className="role-highlights">
+                          {role.highlights.map((highlight) => (
+                            <li key={highlight.lead}>
+                              <strong>{highlight.lead}.</strong> {highlight.text}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </div>
                   ))}
                   {entry.location && (
@@ -404,6 +476,47 @@ function Experience() {
             </Reveal>
           );
         })}
+      </div>
+      <div className="posts">
+        <Reveal className="posts-head">
+          <h3 className="column-label">
+            <LinkedInIcon size={14} />
+            {posts.label}
+          </h3>
+          <p>{posts.intro}</p>
+        </Reveal>
+        <ul className="post-grid">
+          {posts.items.map((post, index) => (
+            <li key={post.date}>
+              <Reveal className="post-reveal" delay={index * 0.08}>
+                <GlareHover
+                  className="post-card"
+                  width="100%"
+                  height="100%"
+                  background="var(--card)"
+                  borderColor="var(--line)"
+                  borderRadius="12px"
+                  glareColor="#c8471f"
+                  glareOpacity={0.16}
+                  glareSize={60}
+                  variant="sheen"
+                >
+                  <figure className="post">
+                    <figcaption className="post-meta">
+                      <span>{post.date}</span>
+                      <span aria-hidden="true">·</span>
+                      <span>{post.topic}</span>
+                    </figcaption>
+                    <blockquote className="post-quote">“{post.excerpt}”</blockquote>
+                    <ExternalLink href={posts.url} className="post-link">
+                      Read on LinkedIn
+                    </ExternalLink>
+                  </figure>
+                </GlareHover>
+              </Reveal>
+            </li>
+          ))}
+        </ul>
       </div>
     </RailSection>
   );
@@ -484,7 +597,7 @@ function Process() {
   return (
     <RailSection
       id="process"
-      number="04"
+      number="05"
       label="Process"
       className="process"
       background={
@@ -544,6 +657,43 @@ function Process() {
           })}
         </Stepper>
       </Reveal>
+    </RailSection>
+  );
+}
+
+function Faq() {
+  const { heading, intro, askLabel, items } = PROFILE.faq;
+  return (
+    <RailSection id="faq" number="06" label="FAQ" className="faq band-paper-deep">
+      <div className="faq-grid">
+        <div className="faq-intro">
+          <SplitHeading heading={heading} />
+          <Reveal delay={0.1}>
+            <p>{intro}</p>
+            <a href="#contact" className="text-link faq-ask">
+              {askLabel} <ArrowDownRight size={16} aria-hidden="true" />
+            </a>
+          </Reveal>
+        </div>
+        <div className="faq-list">
+          {items.map((item, index) => (
+            <Reveal key={item.question} delay={index * 0.05}>
+              <details className="faq-item" open={index === 0 ? true : undefined}>
+                <summary>
+                  <span className="faq-number" aria-hidden="true">
+                    0{index + 1}
+                  </span>
+                  <h3>{item.question}</h3>
+                  <span className="faq-icon" aria-hidden="true">
+                    <Plus size={18} strokeWidth={1.6} />
+                  </span>
+                </summary>
+                <p className="faq-answer">{item.answer}</p>
+              </details>
+            </Reveal>
+          ))}
+        </div>
+      </div>
     </RailSection>
   );
 }
@@ -624,10 +774,12 @@ export default function Portfolio() {
           <Hero />
           <About />
         </div>
+        <Strengths />
         <Services onDiscuss={discuss} />
         <Experience />
         <Company />
         <Process />
+        <Faq />
         <ContactSection service={selectedService} onServiceChange={setSelectedService} />
       </main>
       <Footer />

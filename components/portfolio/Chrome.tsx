@@ -20,6 +20,7 @@ export const NAV_ITEMS = [
   { id: "services", label: "Services" },
   { id: "experience", label: "Experience" },
   { id: "process", label: "Process" },
+  { id: "faq", label: "FAQ" },
   { id: "contact", label: "Contact" },
 ];
 

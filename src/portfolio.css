@@ -712,33 +712,32 @@ a:hover > .link-arrow {
   background: var(--accent);
   transform: translateY(-2px);
 }
-.background-grid {
+.education-block {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(40px, 6vw, 88px);
+  gap: clamp(48px, 5vw, 64px);
   margin-top: clamp(72px, 8vw, 104px);
   scroll-margin-top: 96px;
 }
-.background-stack {
+.education-row {
   display: grid;
-  gap: clamp(48px, 5vw, 64px);
-}
-.ledger-row {
-  display: grid;
-  grid-template-columns: 112px minmax(0, 1fr);
+  grid-template-columns: 170px minmax(0, 1.4fr) minmax(0, 1fr);
   align-items: baseline;
-  gap: 20px;
-  padding: 20px 0;
+  gap: 10px 28px;
+  padding: 22px 0;
   border-bottom: 1px solid var(--line);
 }
-.ledger-row h4 {
+.education-row h4 {
   font-family: var(--serif);
-  font-size: 25px;
-  line-height: 1.15;
+  font-size: clamp(25px, 2.2vw, 30px);
+  line-height: 1.1;
   letter-spacing: -0.01em;
 }
-.ledger-row p {
-  margin-top: 4px;
+.education-row div p {
+  margin-top: 6px;
+  font-size: 15px;
+  color: var(--text-soft);
+}
+.education-note {
   font-size: 14px;
 }
 .ledger-meta {
@@ -1533,6 +1532,279 @@ a:hover > .link-arrow {
   transform: translateY(-3px);
 }
 
+/* ---------- Strengths (React Bits MagicBento) ---------- */
+
+.strengths-rotating {
+  display: block;
+}
+.strengths-rotating .text-rotate {
+  padding-right: 0.08em;
+}
+.card-grid.strengths-bento {
+  --border-color: var(--ink-line);
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  gap: 12px;
+  font-size: 16px;
+}
+.strengths-bento .magic-bento-card {
+  aspect-ratio: auto;
+  min-height: 220px;
+  gap: 28px;
+  padding: 24px;
+  border-color: var(--ink-line);
+  border-radius: 14px;
+  font-weight: 400;
+}
+.strengths-bento .magic-bento-card:nth-child(3),
+.strengths-bento .magic-bento-card:nth-child(4) {
+  background-image: radial-gradient(120% 90% at 100% 0%, rgba(255, 138, 92, 0.14), transparent 55%);
+}
+.strengths-bento .magic-bento-card__header {
+  align-items: center;
+}
+.strengths-bento .magic-bento-card__label {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-bright);
+}
+.strengths-bento .magic-bento-card__icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--ink-line-strong);
+  border-radius: 50%;
+  color: var(--ink-soft);
+}
+.strengths-bento .magic-bento-card__title {
+  margin: 0 0 10px;
+  font-family: var(--serif);
+  font-size: clamp(26px, 2.1vw, 31px);
+  font-weight: 400;
+  line-height: 1.05;
+  color: var(--ink-text);
+}
+.strengths-bento .magic-bento-card__description {
+  max-width: 34em;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink-muted);
+  opacity: 1;
+}
+.strengths {
+  padding-top: clamp(32px, 4vw, 56px);
+}
+@media (min-width: 1200px) {
+  .card-grid.strengths-bento {
+    grid-auto-rows: minmax(210px, auto);
+  }
+  .strengths-bento .magic-bento-card:nth-child(3) .magic-bento-card__title,
+  .strengths-bento .magic-bento-card:nth-child(4) .magic-bento-card__title {
+    font-size: clamp(36px, 3.2vw, 46px);
+  }
+  .strengths-bento .magic-bento-card:nth-child(3) .magic-bento-card__description,
+  .strengths-bento .magic-bento-card:nth-child(4) .magic-bento-card__description {
+    font-size: 17px;
+  }
+}
+/* MagicBento switches to four columns at 1024px; next to the rail that is too narrow until 1200px. */
+@media (min-width: 1024px) and (max-width: 1199px) {
+  .card-grid.strengths-bento {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .strengths-bento .magic-bento-card:nth-child(n) {
+    grid-column: auto;
+    grid-row: auto;
+  }
+}
+
+/* ---------- Experience details and posts ---------- */
+
+.role-highlights {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+.role-highlights li {
+  position: relative;
+  padding-left: 18px;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.role-highlights li::before {
+  content: "";
+  position: absolute;
+  top: 0.68em;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 1px;
+  background: var(--accent);
+}
+.role-highlights strong {
+  font-weight: 600;
+  color: var(--text);
+}
+.posts {
+  margin-top: clamp(64px, 7vw, 96px);
+}
+.posts-head .column-label svg {
+  color: var(--text-soft);
+}
+.posts-head p {
+  margin-top: 14px;
+  font-size: 15px;
+}
+.post-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 24px;
+}
+.post-grid > li,
+.post-reveal {
+  height: 100%;
+}
+.post-card.glare-hover {
+  display: grid;
+  place-items: stretch;
+}
+.post {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  height: 100%;
+  margin: 0;
+  padding: 26px 28px;
+}
+.post-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+.post-quote {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: clamp(25px, 2.3vw, 33px);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+.post-link {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  padding-bottom: 3px;
+  border-bottom: 1px solid var(--accent-line);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent-strong);
+}
+
+/* ---------- FAQ ---------- */
+
+.faq-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  align-items: start;
+  gap: clamp(40px, 6vw, 88px);
+}
+.faq-intro {
+  position: sticky;
+  top: 112px;
+}
+.faq-intro p {
+  max-width: 26em;
+  margin-top: 24px;
+  font-size: 17px;
+}
+.faq-ask {
+  margin-top: 22px;
+  color: var(--accent-strong);
+}
+.faq-list {
+  border-top: 1px solid var(--line-strong);
+}
+.faq-item {
+  border-bottom: 1px solid var(--line);
+}
+.faq-item summary {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 16px;
+  padding: 24px 0;
+  list-style: none;
+  cursor: pointer;
+}
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+.faq-number {
+  padding-top: 9px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--accent-strong);
+}
+.faq-item h3 {
+  font-family: var(--serif);
+  font-size: clamp(24px, 2.2vw, 30px);
+  line-height: 1.15;
+  transition: color 0.3s;
+}
+.faq-item summary:hover h3 {
+  color: var(--accent-strong);
+}
+.faq-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  color: var(--muted);
+  transition:
+    transform 0.5s var(--ease),
+    background-color 0.3s,
+    border-color 0.3s,
+    color 0.3s;
+}
+.faq-item[open] .faq-icon {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #ffffff;
+  transform: rotate(45deg);
+}
+.faq-item::details-content {
+  block-size: 0;
+  overflow: clip;
+  transition:
+    block-size 0.5s var(--ease),
+    content-visibility 0.5s allow-discrete;
+}
+.faq-item[open]::details-content {
+  block-size: auto;
+}
+.faq-answer {
+  max-width: 40em;
+  padding: 0 52px 26px 56px;
+  font-size: 16px;
+  color: var(--text-soft);
+}
+
 /* ---------- Depth and motion ---------- */
 
 /* The hero stays put on tall desktop screens while About slides over it as a sheet. */
@@ -1714,9 +1986,16 @@ a:hover > .link-arrow {
   }
   .section-head,
   .about-body,
-  .background-grid,
+  .faq-grid,
   .contact-grid {
     grid-template-columns: minmax(0, 1fr);
+  }
+  .faq-intro {
+    position: static;
+  }
+  .education-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
   }
   .section-head {
     gap: 22px;
@@ -1751,7 +2030,8 @@ a:hover > .link-arrow {
   .service-card h3 {
     margin-top: 32px;
   }
-  .company-figures {
+  .company-figures,
+  .post-grid {
     grid-template-columns: minmax(0, 1fr);
   }
   .company-figures > div {
@@ -1796,9 +2076,18 @@ a:hover > .link-arrow {
   .form-row {
     grid-template-columns: minmax(0, 1fr);
   }
-  .ledger-row {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 6px;
+  .faq-item summary {
+    grid-template-columns: 28px minmax(0, 1fr) auto;
+    gap: 12px;
+  }
+  .faq-answer {
+    padding: 0 0 24px 40px;
+  }
+  .post {
+    padding: 22px;
+  }
+  .strengths-bento .magic-bento-card {
+    min-height: 0;
   }
   .process-stepper.stepper {
     --stepper-inset: 14px;

@@ -107,7 +107,7 @@ export function ContactSection({
         />
       </div>
       <div className="shell">
-        <SectionLabel number="05">Contact</SectionLabel>
+        <SectionLabel number="07">Contact</SectionLabel>
         <div className="contact-grid">
           <div className="contact-intro">
             <h2 className="contact-title">

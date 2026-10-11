@@ -2,6 +2,8 @@
 
 A single-page portfolio for Farhan Sadik Susmit, Business Development Executive at Exprovia (Rajshahi, Bangladesh). Built with React 19, TypeScript and Vite, with animated components from [React Bits](https://reactbits.dev/).
 
+Sections: hero, About (with skills and education), What I bring (strengths), Services, Experience (with role highlights and recent LinkedIn posts), the Exprovia band, Process, FAQ and Contact.
+
 The design is editorial: warm paper sections, charcoal bands sampled from the portrait's studio backdrop, Instrument Serif headings, Manrope body text, DM Mono labels and a single terracotta accent.
 
 Motion: on tall desktop screens the hero stays pinned while the About section slides over it as a rounded sheet (with light parallax and dimming), the portrait wipes in, a light travels around the main button, the Exprovia band has flowing threads, Process has a cursor-reactive line field, and a faint film grain sits over the page. The header hides while scrolling down and returns when scrolling up. Everything falls back to still frames for visitors who prefer reduced motion.
@@ -20,7 +22,7 @@ With the dev server running, check the site in a real browser:
 node scripts/verify-portfolio.mjs
 ```
 
-The check uses the installed Microsoft Edge through Playwright. It covers the page structure and anchors, reduced motion, the portrait, the service → contact flow, form validation, the project-brief dialog (clipboard, WhatsApp, email and LinkedIn links, Escape and backdrop closing, focus return), the experience disclosures, the process stepper, the mobile menu, back to top, horizontal overflow from 1440px down to 320px, broken images, console errors, and with normal motion the pinned hero, header hide/show, and every animated canvas. Screenshots go to `.qa/` (ignored by git). Set `PORTFOLIO_URL` to test another address.
+The check uses the installed Microsoft Edge through Playwright. It covers the page structure, navigation and anchors, the strength cards, education notes, LinkedIn posts and FAQ, reduced motion, the portrait, the service → contact flow, form validation, the project-brief dialog (clipboard, WhatsApp, email and LinkedIn links, Escape and backdrop closing, focus return), the experience disclosures, the process stepper, the mobile menu, back to top, horizontal overflow from 1440px down to 320px, broken images, console errors, and with normal motion the pinned hero, header hide/show, the rotating heading, bento particles and every animated canvas. Screenshots go to `.qa/` (ignored by git). Set `PORTFOLIO_URL` to test another address.
 
 ## Where things live
 

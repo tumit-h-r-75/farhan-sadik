@@ -14,7 +14,9 @@ await mkdir(output, { recursive: true });
 const EXPECT = {
   name: /Farhan Sadik\s+Susmit\./,
   title: /Farhan Sadik Susmit/,
-  sections: ["top", "about", "education", "services", "experience", "exprovia", "process", "contact"],
+  sections: ["top", "about", "education", "strengths", "services", "experience", "exprovia", "process", "faq", "contact"],
+  nav: ["About", "Services", "Experience", "Process", "FAQ", "Contact"],
+  postsUrl: "https://www.linkedin.com/in/farhan-sadik-susmit-160646349/recent-activity/all/",
   service: "Web Applications",
   whatsapp: "https://wa.me/8801714475386",
   email: "mailto:farhansusmit@gmail.com",
@@ -97,7 +99,33 @@ try {
   assert.equal(await footer.getByRole("link", { name: /Facebook/ }).getAttribute("href"), EXPECT.facebook);
   assert.equal(await footer.getByRole("link", { name: /Instagram/ }).getAttribute("href"), EXPECT.instagram);
   assert.equal(await page.locator("text=TODO").count(), 0, "A TODO value is visible on the page");
-  checkpoint("page, title, sections, anchors, JSON-LD, footer socials and no visible TODOs");
+  assert.deepEqual(
+    await page.locator(".desktop-nav a").allInnerTexts(),
+    EXPECT.nav,
+    "Main navigation items",
+  );
+  checkpoint("page, title, sections, navigation, anchors, JSON-LD, footer socials and no visible TODOs");
+
+  // Informative sections: strengths, education notes, role highlights, posts, FAQ.
+  const bentoCards = page.locator(".strengths-bento .magic-bento-card");
+  assert.equal(await bentoCards.count(), 6, "Expected six strength cards");
+  assert.equal(await bentoCards.locator("h3").count(), 6);
+  assert.match(await bentoCards.nth(2).innerText(), /direct line to the build team/i);
+  assert.match(await page.locator(".strengths-rotating").innerText(), /to your first call\./);
+  assert.equal(await page.locator(".education-note").count(), 2);
+  assert.match(await page.locator("#education").innerText(), /C programming and HTML/);
+  const posts = page.locator(".post");
+  assert.equal(await posts.count(), 2);
+  for (const link of await page.locator(".post-link").all())
+    assert.equal(await link.getAttribute("href"), EXPECT.postsUrl);
+  const faqItems = page.locator(".faq-item");
+  assert.equal(await faqItems.count(), 5);
+  assert.equal(await isOpen(faqItems.first()), true, "First FAQ is not open");
+  await faqItems.nth(1).locator("summary").click();
+  assert.equal(await isOpen(faqItems.nth(1)), true);
+  await faqItems.nth(1).locator("summary").click();
+  assert.equal(await isOpen(faqItems.nth(1)), false);
+  checkpoint("strength cards, education notes, LinkedIn posts and FAQ disclosures");
 
   // 2. Portrait and reduced motion.
   const portrait = page.locator(".portrait .tilted-card-img");
@@ -130,10 +158,15 @@ try {
   await page.waitForTimeout(150);
   await page.screenshot({ path: artifact("desktop-hero.png") });
   await captureSection(page, "about", "desktop-about.png");
+  await captureSection(page, "strengths", "desktop-strengths.png");
   await captureSection(page, "services", "desktop-services.png");
   await captureSection(page, "experience", "desktop-experience.png");
   await captureSection(page, "exprovia", "desktop-company.png");
   await captureSection(page, "process", "desktop-process.png");
+  await captureSection(page, "faq", "desktop-faq.png");
+  await page.locator(".posts").scrollIntoViewIfNeeded();
+  await page.waitForTimeout(150);
+  await page.screenshot({ path: artifact("desktop-posts.png") });
   await captureSection(page, "contact", "desktop-contact.png");
   await page.screenshot({ path: artifact("desktop-full.png"), fullPage: true });
 
@@ -259,6 +292,8 @@ try {
   await page.waitForTimeout(150);
   await page.screenshot({ path: artifact("mobile-hero.png") });
   await captureSection(page, "services", "mobile-services.png");
+  await captureSection(page, "strengths", "mobile-strengths.png");
+  await captureSection(page, "faq", "mobile-faq.png");
   await captureSection(page, "contact", "mobile-contact.png");
   await page.screenshot({ path: artifact("mobile-full.png"), fullPage: true });
   checkpoint("mobile menu opens, navigates and closes on Escape");
@@ -331,6 +366,23 @@ try {
   assert.ok((await headerBottom()) > 40, "Header did not return on scroll up");
   checkpoint("hero pinned, StarBorder and grain render, header hides on scroll down and returns on scroll up");
 
+  // Strengths: the heading rotates once it is in view, and the bento cards glow near the cursor.
+  await animatedPage.locator("#strengths .split-heading").scrollIntoViewIfNeeded();
+  await animatedPage.waitForTimeout(3200);
+  assert.doesNotMatch(
+    await animatedPage.locator(".strengths-rotating .text-rotate-sr-only").innerText(),
+    /first call/,
+    "Strengths heading did not rotate",
+  );
+  const bigCard = animatedPage.locator(".strengths-bento .magic-bento-card").nth(2);
+  await bigCard.scrollIntoViewIfNeeded();
+  const cardBox = await bigCard.boundingBox();
+  await animatedPage.mouse.move(cardBox.x + cardBox.width / 2, cardBox.y + cardBox.height / 2, { steps: 8 });
+  await animatedPage.waitForTimeout(1200);
+  assert.ok((await bigCard.locator(".particle").count()) > 0, "Bento particles did not appear on hover");
+  await animatedPage.screenshot({ path: artifact("desktop-strengths-hover.png") });
+  await animatedPage.mouse.move(5, 5);
+
   await animatedPage.locator("#exprovia").scrollIntoViewIfNeeded();
   await animatedPage.waitForTimeout(900);
   assert.equal(await animatedPage.locator(".company-threads canvas").count(), 1, "Threads canvas missing");
@@ -347,7 +399,7 @@ try {
   await animatedPage.screenshot({ path: artifact("desktop-contact-animated.png") });
   assert.deepEqual(issues, [], "Browser console or runtime errors with normal motion");
   await animatedContext.close();
-  checkpoint("normal motion: Threads, Waves and Particles render, CSS animation advances, no errors");
+  checkpoint("normal motion: rotating heading, bento particles, Threads, Waves and Particles render, no errors");
 
   console.log("All checks passed. Screenshots saved to .qa/");
 } finally {

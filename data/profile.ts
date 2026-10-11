@@ -18,6 +18,7 @@ export interface ExperienceRole {
   start: string;
   end: string;
   description?: string;
+  highlights?: { lead: string; text: string }[];
 }
 
 export interface ExperienceEntry {
@@ -39,6 +40,24 @@ export interface ProcessStep {
   title: string;
   text: string;
   icon: "call" | "proposal" | "kickoff" | "updates";
+}
+
+export interface Strength {
+  label: string;
+  title: string;
+  text: string;
+  icon: "languages" | "relationship" | "coordination" | "technical" | "support" | "business";
+}
+
+export interface Post {
+  date: string;
+  topic: string;
+  excerpt: string;
+}
+
+export interface FaqItem {
+  question: string;
+  answer: string;
 }
 
 export interface CompanyFigure {
@@ -74,12 +93,17 @@ export interface Profile {
     statement: string;
     paragraph: string;
     skills: string[];
-    education: { institution: string; degree: string; years: string }[];
+    education: { institution: string; degree: string; years: string; note?: string }[];
     community: { name: string; role: string; association: string }[];
-    languages: { name: string; level: string }[];
   };
+  strengths: { heading: string; rotating: string[]; intro: string; items: Strength[] };
   services: { heading: Heading; intro: string; items: ServiceItem[] };
-  experience: { heading: Heading; intro: string; entries: ExperienceEntry[] };
+  experience: {
+    heading: Heading;
+    intro: string;
+    entries: ExperienceEntry[];
+    posts: { label: string; intro: string; url: string; items: Post[] };
+  };
   companyPanel: {
     id: string;
     eyebrow: string;
@@ -91,6 +115,7 @@ export interface Profile {
     source: { label: string; url: string };
   };
   process: { heading: Heading; intro: string; steps: ProcessStep[] };
+  faq: { heading: Heading; intro: string; askLabel: string; items: FaqItem[] };
   contactSection: {
     heading: [string, string, string];
     intro: string;
@@ -138,7 +163,7 @@ export const PROFILE: Profile = {
     statement:
       "Good projects start with being understood. I listen first, then make sure the right people hear it.",
     paragraph:
-      "My work sits between clients and the people who build for them: understanding what a business needs, keeping requirements clear, and keeping everyone updated as the work moves. Studying computer science, supporting customers and now studying business have taught me the same lesson from three sides: projects go well when people understand each other.",
+      "Day to day I work across marketing, client communication, business strategy and relationship management. In practice that means understanding what a business needs, keeping the requirements clear, and making sure everyone stays updated as the work moves.",
     skills: [
       "Business Development",
       "Business Strategy",
@@ -153,20 +178,62 @@ export const PROFILE: Profile = {
     education: [
       {
         institution: "Rajshahi University",
-        degree: "MBA, Management Studies (in progress)",
-        years: "2024 – 2026",
+        degree: "Master of Business Administration (MBA), Management Studies",
+        years: "Sep 2024 – Dec 2026",
+        note: "Currently studying.",
       },
       {
         institution: "Bangladesh Army University of Engineering & Technology",
-        degree: "BSc, Computer Science & Engineering",
-        years: "2017 – 2021",
+        degree: "Bachelor of Science, Computer Science & Engineering",
+        years: "Nov 2017 – Dec 2021",
+        note: "Completed. Coursework included C programming and HTML.",
       },
     ],
     // TODO: add organisations (name, role, association) if Farhan has any.
     community: [],
-    languages: [
-      { name: "Bengali", level: "Native or bilingual" },
-      { name: "English", level: "Professional working proficiency" },
+  },
+  strengths: {
+    heading: "What I bring",
+    rotating: ["to your first call.", "to your brief.", "to every update."],
+    intro:
+      "A technical degree, a year on a customer support desk and daily work with a production team. Here is what that means when we work together.",
+    items: [
+      {
+        label: "Communication",
+        title: "English and Bengali",
+        text: "Native Bengali and professional working English, for calls, briefs and updates.",
+        icon: "languages",
+      },
+      {
+        label: "Relationships",
+        title: "Relationship first",
+        text: "Clear expectations up front and regular updates after. I look after the relationship, not only the deal.",
+        icon: "relationship",
+      },
+      {
+        label: "Project coordination",
+        title: "A direct line to the build team",
+        text: "Every day I brief Exprovia's production team on project updates and the task requirements set by the Project Manager, so your requirements reach the people building your project.",
+        icon: "coordination",
+      },
+      {
+        label: "Technical background",
+        title: "I speak developer",
+        text: "A BSc in Computer Science & Engineering means I can follow the technical side of your project, ask the right questions and explain the answers in plain terms.",
+        icon: "technical",
+      },
+      {
+        label: "Customer care",
+        title: "Trained on the support desk",
+        text: "A year in customer service at bKash taught me to listen carefully and resolve issues before they escalate.",
+        icon: "support",
+      },
+      {
+        label: "Business focus",
+        title: "Thinking like the client",
+        text: "My MBA studies keep the focus on what the project has to achieve for your business.",
+        icon: "business",
+      },
     ],
   },
   services: {
@@ -241,8 +308,16 @@ export const PROFILE: Profile = {
             title: "Customer Service Specialist",
             start: "Aug 2021",
             end: "Jul 2022",
-            description:
-              "Answered customer enquiries by phone and chat, and identified, troubleshot and resolved issues to keep escalations low.",
+            highlights: [
+              {
+                lead: "Customer support",
+                text: "Responded promptly to customer enquiries by phone and chat, keeping service quality high.",
+              },
+              {
+                lead: "Issue resolution",
+                text: "Identified, troubleshot and resolved customer issues efficiently, keeping escalations to a minimum.",
+              },
+            ],
           },
         ],
       },
@@ -260,6 +335,24 @@ export const PROFILE: Profile = {
         ],
       },
     ],
+    // Opening lines of Farhan's LinkedIn posts, quoted as they appear on his profile.
+    posts: {
+      label: "Recent posts",
+      intro: "Short notes from LinkedIn, where I write about the work.",
+      url: "https://www.linkedin.com/in/farhan-sadik-susmit-160646349/recent-activity/all/",
+      items: [
+        {
+          date: "October 2026",
+          topic: "On business development",
+          excerpt: "The hardest part of business development isn't finding potential clients…",
+        },
+        {
+          date: "May 2026",
+          topic: "On four months at Exprovia",
+          excerpt: "Almost 4 months at Exprovia and honestly time flew faster than our project deadlines!",
+        },
+      ],
+    },
   },
   companyPanel: {
     id: "exprovia",
@@ -304,6 +397,38 @@ export const PROFILE: Profile = {
         title: "Regular updates",
         text: "I keep you posted on progress and take your feedback back to the team until delivery.",
         icon: "updates",
+      },
+    ],
+  },
+  faq: {
+    heading: { lead: "Questions,", dim: "answered." },
+    intro: "The things people usually ask before a first call.",
+    askLabel: "Ask me something else",
+    items: [
+      {
+        question: "Do I need a finished idea before we talk?",
+        answer:
+          "No. The discovery call is there to shape it. Bring the business goal and we work out the scope, timeline and budget together.",
+      },
+      {
+        question: "Who actually builds the project?",
+        answer:
+          "Exprovia's production team in Rajshahi. I stay your point of contact and keep the team briefed on your requirements and feedback.",
+      },
+      {
+        question: "Will I see a scope and cost before anything starts?",
+        answer:
+          "Yes. After the discovery call you receive a written scope and estimate to review before you decide.",
+      },
+      {
+        question: "I'm outside Bangladesh. Can we still work together?",
+        answer:
+          "Yes. Exprovia builds software for clients worldwide, and you can reach me on WhatsApp, by email or on LinkedIn. My local time is shown next to the contact details.",
+      },
+      {
+        question: "What is the quickest way to start?",
+        answer:
+          "Fill in the short brief below. It turns your answers into a message you can send me on WhatsApp, by email or on LinkedIn. Nothing is sent until you choose.",
       },
     ],
   },
