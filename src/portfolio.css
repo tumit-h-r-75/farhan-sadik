@@ -1040,20 +1040,10 @@ a:hover > .link-arrow {
 .company-brand .eyebrow {
   display: block;
 }
-.company-wordmark {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 18px;
-  font-size: 28px;
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: -0.045em;
-}
-.company-wordmark svg {
-  width: 15px;
-  height: 15px;
-  fill: var(--accent-bright);
+.company-logo {
+  width: min(100%, 190px);
+  height: auto;
+  margin-top: 22px;
 }
 .company-heading {
   font-size: clamp(44px, 5vw, 76px);

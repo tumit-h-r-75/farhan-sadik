@@ -523,7 +523,7 @@ function Experience() {
 }
 
 function Company() {
-  const { id, eyebrow, heading, summary, teammate, figuresLabel, figures, source } = PROFILE.companyPanel;
+  const { id, eyebrow, heading, summary, teammate, logo, figuresLabel, figures, source } = PROFILE.companyPanel;
   return (
     <section id={id} className="company band-ink" aria-label={PROFILE.company}>
       <div className="company-threads" aria-hidden="true">
@@ -546,12 +546,14 @@ function Company() {
         <Reveal className="company-top">
           <div className="company-brand">
             <span className="eyebrow">{eyebrow}</span>
-            <div className="company-wordmark">
-              <svg viewBox="0 0 16 16" aria-hidden="true">
-                <path d="M3 2h11v11l-3.6-3.6L4.6 15.2 0.8 11.4l5.8-5.8z" />
-              </svg>
-              <span>{PROFILE.company.toLowerCase()}</span>
-            </div>
+            <img
+              className="company-logo"
+              src={logo.src}
+              alt={logo.alt}
+              width={logo.width}
+              height={logo.height}
+              decoding="async"
+            />
           </div>
           <div className="company-copy">
             <SplitHeading className="company-heading" heading={heading} />

@@ -152,6 +152,13 @@ try {
     "visible",
   );
   assert.equal((await page.locator(".company-figures dd").first().textContent()).trim(), "350+");
+  const companyLogo = page.locator(".company-logo");
+  await companyLogo.scrollIntoViewIfNeeded();
+  assert.ok(
+    await companyLogo.evaluate((image) => image.complete && image.naturalWidth === 500),
+    "Exprovia logo did not load",
+  );
+  assert.equal(await companyLogo.getAttribute("alt"), "Exprovia, IT Solutions & Services");
   checkpoint("portrait loads; reduced motion shows content, final figures and no looping animation");
 
   await page.evaluate(() => window.scrollTo(0, 0));

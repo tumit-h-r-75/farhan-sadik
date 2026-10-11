@@ -110,6 +110,7 @@ export interface Profile {
     heading: Heading;
     summary: string;
     teammate: { label: string; url: string };
+    logo: { src: string; alt: string; width: number; height: number };
     figuresLabel: string;
     figures: CompanyFigure[];
     source: { label: string; url: string };
@@ -356,6 +357,13 @@ export const PROFILE: Profile = {
   },
   companyPanel: {
     id: "exprovia",
+    // Official Exprovia logo: white wordmark and green mark on a transparent background.
+    logo: {
+      src: "/images/exprovia-logo.png",
+      alt: "Exprovia, IT Solutions & Services",
+      width: 500,
+      height: 147,
+    },
     eyebrow: "The team behind the conversation",
     heading: { lead: "You talk to me.", dim: "A full team delivers." },
     summary:
