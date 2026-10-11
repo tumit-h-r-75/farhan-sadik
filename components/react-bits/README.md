@@ -17,5 +17,9 @@ These components come from [React Bits](https://reactbits.dev/) by David Haz, do
 | GlareHover | WhatsApp, LinkedIn and email cards | None |
 | Particles | Contact background | Pauses off screen (IntersectionObserver), one still frame for reduced motion |
 | Magnet | Primary buttons | None (disabled for touch and reduced motion by `Magnetic` in `Chrome.tsx`) |
+| StarBorder | Light travelling around the hero call to action | None (it already stops moving for reduced motion) |
+| Threads | Flowing lines behind the Exprovia band | None (pauses off screen and freezes for reduced motion on its own) |
+| Waves | Cursor-reactive line field behind Process | Fresh bounding box for the pointer (it went stale after scrolling), pauses off screen, one still frame for reduced motion, broken cursor-dot CSS removed |
+| Noise | Very light animated film grain over the whole page | None (static for reduced motion on its own) |
 
-LightRays and Particles need `ogl`. ScrollReveal and AnimatedContent need `gsap`. The others use `motion` or plain CSS.
+LightRays and Particles need `ogl`. StarBorder, Threads (WebGL2), Waves and Noise have no dependencies. ScrollReveal and AnimatedContent need `gsap`. The others use `motion` or plain CSS.

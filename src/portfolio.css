@@ -1533,6 +1533,113 @@ a:hover > .link-arrow {
   transform: translateY(-3px);
 }
 
+/* ---------- Depth and motion ---------- */
+
+/* The hero stays put on tall desktop screens while About slides over it as a sheet. */
+.curtain {
+  position: relative;
+}
+@media (min-width: 901px) and (min-height: 760px) {
+  .hero {
+    position: sticky;
+    top: 0;
+  }
+}
+.hero-dim {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: var(--ink);
+  opacity: 0;
+  pointer-events: none;
+}
+.about,
+.contact {
+  position: relative;
+  z-index: 1;
+  margin-top: -32px;
+  border-radius: 32px 32px 0 0;
+}
+.about {
+  background: var(--paper);
+  box-shadow: 0 -40px 80px -40px rgba(0, 0, 0, 0.6);
+}
+
+/* The Exprovia band floats as a rounded card. */
+.company {
+  margin-inline: clamp(8px, 1.4vw, 20px);
+  border-radius: clamp(22px, 2.6vw, 36px);
+}
+.company-threads {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Animated section backgrounds (Waves behind Process). */
+.has-bg {
+  isolation: isolate;
+  overflow: clip;
+}
+.section-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+}
+
+/* Hero call to action with the travelling light (StarBorder). */
+.button.hero-cta:hover {
+  background: var(--accent-hover);
+  box-shadow: 0 14px 34px -14px rgba(200, 71, 31, 0.7);
+}
+
+/* Portrait reveal: wipes up from the bottom while the photo settles from a slight zoom. */
+@media (prefers-reduced-motion: no-preference) {
+  .portrait .tilted-card-figure {
+    animation: portrait-reveal 1.5s var(--ease) 0.3s both;
+  }
+  .portrait .tilted-card-img {
+    animation: portrait-zoom 1.9s var(--ease) 0.3s both;
+  }
+}
+@keyframes portrait-reveal {
+  from {
+    clip-path: inset(100% 0 0 0 round 18px);
+  }
+  to {
+    clip-path: inset(-25% round 18px);
+  }
+}
+@keyframes portrait-zoom {
+  from {
+    transform: scale(1.2);
+  }
+  to {
+    transform: translateZ(0);
+  }
+}
+
+/* Small lifts on hover. */
+.service-card.spotlight-card {
+  transition:
+    transform 0.6s var(--ease),
+    box-shadow 0.6s var(--ease);
+}
+.service-card.spotlight-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 30px 60px -36px rgba(60, 40, 20, 0.45);
+}
+.experience-company-row h3 {
+  transition: color 0.3s;
+}
+.experience-entry summary:hover .experience-company-row h3 {
+  color: var(--accent-strong);
+}
+
 /* ---------- Responsive ---------- */
 
 @media (max-width: 1024px) {
@@ -1660,6 +1767,11 @@ a:hover > .link-arrow {
 @media (max-width: 600px) {
   .shell {
     width: calc(100% - 40px);
+  }
+  .about,
+  .contact {
+    margin-top: -24px;
+    border-radius: 24px 24px 0 0;
   }
   .header-inner,
   .is-scrolled .header-inner {

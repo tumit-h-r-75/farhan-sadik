@@ -113,9 +113,10 @@ try {
         [".scroll-cue-line span", null],
         [".company", "::before"],
         [".pulse-dot", "::after"],
+        [".portrait .tilted-card-figure", null],
       ].map(([selector, pseudo]) => getComputedStyle(document.querySelector(selector), pseudo).animationName),
     ),
-    ["none", "none", "none", "none"],
+    ["none", "none", "none", "none", "none"],
     "Looping animations still run under reduced motion",
   );
   assert.equal(
@@ -220,6 +221,11 @@ try {
   assert.equal(await channel("WhatsApp").getAttribute("rel"), "noopener noreferrer");
   checkpoint("career disclosure, process stepper (next, step click, final step) and contact channels");
 
+  await page.locator(".site-footer").getByRole("link", { name: /Back to top/ }).click();
+  await page.waitForTimeout(150);
+  assert.ok((await page.evaluate(() => window.scrollY)) < 2, "Back to top did not return to the top");
+  checkpoint("back to top returns to the start of the page");
+
   // 5. No horizontal overflow from 1440px down to 320px.
   for (const width of WIDTHS) await assertFits(width);
   checkpoint(`no horizontal overflow at ${WIDTHS.join(", ")}px`);
@@ -301,13 +307,47 @@ try {
   await animatedPage.mouse.move(box.x + box.width * 0.6, box.y + box.height * 0.4);
   await animatedPage.waitForTimeout(500);
   await animatedPage.screenshot({ path: artifact("desktop-hover-service.png") });
+  assert.equal(await animatedPage.locator(".hero-cta canvas").count(), 1, "StarBorder canvas missing");
+  assert.equal(await animatedPage.locator(".noise").count(), 1, "Noise overlay missing");
+  assert.equal(
+    await animatedPage.locator(".hero").evaluate((element) => getComputedStyle(element).position),
+    "sticky",
+    "Hero is not pinned on a tall desktop screen",
+  );
+
+  // Header hides while scrolling down and returns when scrolling up.
+  await animatedPage.mouse.move(700, 600);
+  for (let i = 0; i < 6; i++) {
+    await animatedPage.mouse.wheel(0, 400);
+    await animatedPage.waitForTimeout(80);
+  }
+  await animatedPage.waitForTimeout(900);
+  const headerBottom = () =>
+    animatedPage.locator(".site-header").evaluate((element) => element.getBoundingClientRect().bottom);
+  assert.ok((await headerBottom()) <= 1, "Header did not hide on scroll down");
+  await animatedPage.screenshot({ path: artifact("desktop-sheet-over-hero.png") });
+  await animatedPage.mouse.wheel(0, -300);
+  await animatedPage.waitForTimeout(900);
+  assert.ok((await headerBottom()) > 40, "Header did not return on scroll up");
+  checkpoint("hero pinned, StarBorder and grain render, header hides on scroll down and returns on scroll up");
+
+  await animatedPage.locator("#exprovia").scrollIntoViewIfNeeded();
+  await animatedPage.waitForTimeout(900);
+  assert.equal(await animatedPage.locator(".company-threads canvas").count(), 1, "Threads canvas missing");
+  await animatedPage.screenshot({ path: artifact("desktop-company-animated.png") });
+  await animatedPage.locator("#process").scrollIntoViewIfNeeded();
+  await animatedPage.mouse.move(400, 500);
+  await animatedPage.mouse.move(900, 450, { steps: 12 });
+  await animatedPage.waitForTimeout(600);
+  assert.equal(await animatedPage.locator(".process .waves canvas").count(), 1, "Waves canvas missing");
+  await animatedPage.screenshot({ path: artifact("desktop-process-animated.png") });
   await animatedPage.locator("#contact").scrollIntoViewIfNeeded();
   await animatedPage.waitForTimeout(800);
   assert.equal(await animatedPage.locator(".contact-particles canvas").count(), 1, "Particles canvas missing");
   await animatedPage.screenshot({ path: artifact("desktop-contact-animated.png") });
   assert.deepEqual(issues, [], "Browser console or runtime errors with normal motion");
   await animatedContext.close();
-  checkpoint("normal motion: hero and contact canvases render and CSS animation advances");
+  checkpoint("normal motion: Threads, Waves and Particles render, CSS animation advances, no errors");
 
   console.log("All checks passed. Screenshots saved to .qa/");
 } finally {

@@ -1,5 +1,5 @@
 import { useEffect, useState, type CSSProperties } from "react";
-import { MotionConfig } from "motion/react";
+import { MotionConfig, motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import {
   ArrowDown,
   ArrowDownRight,
@@ -25,11 +25,15 @@ import { PROFILE, isKnown } from "@/data/profile";
 import BlurText from "@/components/react-bits/BlurText";
 import CountUp from "@/components/react-bits/CountUp";
 import LightRays from "@/components/react-bits/LightRays";
+import Noise from "@/components/react-bits/Noise";
 import ScrollReveal from "@/components/react-bits/ScrollReveal";
 import ShinyText from "@/components/react-bits/ShinyText";
 import SpotlightCard from "@/components/react-bits/SpotlightCard";
+import StarBorder from "@/components/react-bits/StarBorder";
 import Stepper, { Step } from "@/components/react-bits/Stepper";
+import Threads from "@/components/react-bits/Threads";
 import TiltedCard from "@/components/react-bits/TiltedCard";
+import Waves from "@/components/react-bits/Waves";
 import { ContactSection } from "./ContactSection";
 import {
   ExternalLink,
@@ -63,10 +67,36 @@ const stepperTheme = {
   "--stepper-faint": "rgba(23, 22, 26, 0.22)",
 } as CSSProperties;
 
+/** Scroll-linked depth for the hero, on wide screens with normal motion only. */
+function useHeroParallax() {
+  const reducedMotion = useReducedMotion();
+  const [wide, setWide] = useState(false);
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 901px)");
+    const update = () => setWide(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+  const { scrollY } = useScroll();
+  const copyY = useTransform(scrollY, [0, 900], [0, -140]);
+  const copyOpacity = useTransform(scrollY, [0, 650], [1, 0]);
+  const portraitY = useTransform(scrollY, [0, 900], [0, 90]);
+  const portraitScale = useTransform(scrollY, [0, 900], [1, 0.92]);
+  const dim = useTransform(scrollY, [0, 900], [0, 0.7]);
+  const enabled = wide && !reducedMotion;
+  return {
+    copy: enabled ? { y: copyY, opacity: copyOpacity } : undefined,
+    portrait: enabled ? { y: portraitY, scale: portraitScale } : undefined,
+    dim: enabled ? { opacity: dim } : { opacity: 0 },
+  };
+}
+
 function Hero() {
   const [first, second] = PROFILE.heroName;
+  const parallax = useHeroParallax();
   return (
-    <section id="top" className="hero band-ink">
+    <section className="hero band-ink" aria-label="Introduction">
       <div className="hero-rays" aria-hidden="true">
         <LightRays
           raysOrigin="top-center"
@@ -83,7 +113,7 @@ function Hero() {
       </div>
       <div className="shell hero-grid">
         <Reveal className="hero-visual" delay={0.25}>
-          <div className="portrait">
+          <motion.div className="portrait" style={parallax.portrait}>
             <span className="portrait-glow" aria-hidden="true" />
             <TiltedCard
               imageSrc={PROFILE.photo.portrait}
@@ -97,9 +127,9 @@ function Hero() {
               showMobileWarning={false}
               showTooltip={false}
             />
-          </div>
+          </motion.div>
         </Reveal>
-        <div className="hero-copy">
+        <motion.div className="hero-copy" style={parallax.copy}>
           <Reveal delay={0.1}>
             <span className="hero-pill">
               <span className="pulse-dot" aria-hidden="true" />
@@ -128,15 +158,28 @@ function Hero() {
           </Reveal>
           <Reveal className="hero-actions" delay={0.6}>
             <Magnetic>
-              <a href="#contact" className="button button-accent">
+              <StarBorder
+                as="a"
+                href="#contact"
+                className="button hero-cta"
+                backgroundColor="var(--accent)"
+                textColor="#ffffff"
+                borderColor="rgba(255, 255, 255, 0.16)"
+                color="#ffe1d3"
+                trailColor={ACCENT_BRIGHT}
+                radius={6}
+                thickness={1.5}
+                duration={5}
+                glow={0.9}
+              >
                 {PROFILE.hero.primaryCta} <ArrowUpRight size={18} aria-hidden="true" />
-              </a>
+              </StarBorder>
             </Magnetic>
             <a href="#experience" className="button button-outline-light">
               {PROFILE.hero.secondaryCta} <ArrowDownRight size={18} aria-hidden="true" />
             </a>
           </Reveal>
-        </div>
+        </motion.div>
       </div>
       <div className="shell hero-foot">
         <a className="scroll-cue" href="#about">
@@ -147,6 +190,7 @@ function Hero() {
           <ArrowDown size={14} aria-hidden="true" />
         </a>
       </div>
+      <motion.span className="hero-dim" style={parallax.dim} aria-hidden="true" />
     </section>
   );
 }
@@ -369,6 +413,22 @@ function Company() {
   const { id, eyebrow, heading, summary, teammate, figuresLabel, figures, source } = PROFILE.companyPanel;
   return (
     <section id={id} className="company band-ink" aria-label={PROFILE.company}>
+      <div className="company-threads" aria-hidden="true">
+        <Threads
+          color={ACCENT_BRIGHT}
+          accentColor="#f3efe7"
+          amplitude={1.3}
+          distance={0.32}
+          lineCount={70}
+          thickness={0.6}
+          speed={0.45}
+          angle={-10}
+          brightness={1.1}
+          fade={0.35}
+          opacity={0.5}
+          enableMouseInteraction
+        />
+      </div>
       <div className="shell">
         <Reveal className="company-top">
           <div className="company-brand">
@@ -422,7 +482,27 @@ function Process() {
   const [step, setStep] = useState(1);
   const { heading, intro, steps } = PROFILE.process;
   return (
-    <RailSection id="process" number="04" label="Process" className="process">
+    <RailSection
+      id="process"
+      number="04"
+      label="Process"
+      className="process"
+      background={
+        <Waves
+          lineColor="rgba(23, 22, 20, 0.1)"
+          backgroundColor="transparent"
+          waveSpeedX={0.0125}
+          waveSpeedY={0.005}
+          waveAmpX={36}
+          waveAmpY={18}
+          xGap={14}
+          yGap={36}
+          friction={0.925}
+          tension={0.005}
+          maxCursorMove={110}
+        />
+      }
+    >
       <div className="section-head">
         <SplitHeading heading={heading} />
         <Reveal delay={0.1}>
@@ -538,9 +618,12 @@ export default function Portfolio() {
         Skip to content
       </a>
       <Header />
+      <Noise fixed opacity={0.045} fps={10} blendMode="overlay" contrast={0.5} zIndex={70} />
       <main id="main-content">
-        <Hero />
-        <About />
+        <div id="top" className="curtain">
+          <Hero />
+          <About />
+        </div>
         <Services onDiscuss={discuss} />
         <Experience />
         <Company />

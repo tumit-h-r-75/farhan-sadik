@@ -105,16 +105,23 @@ export function RailSection({
   number,
   label,
   className = "",
+  background,
   children,
 }: {
   id: string;
   number: string;
   label: string;
   className?: string;
+  background?: ReactNode;
   children: ReactNode;
 }) {
   return (
-    <section id={id} className={`section ${className}`.trim()}>
+    <section id={id} className={`section ${background ? "has-bg " : ""}${className}`.trim()}>
+      {background && (
+        <div className="section-bg" aria-hidden="true">
+          {background}
+        </div>
+      )}
       <div className="shell rail-grid">
         <div className="rail">
           <SectionLabel number={number}>{label}</SectionLabel>
@@ -234,11 +241,20 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState("");
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const lastY = useRef(0);
   const toggleRef = useRef<HTMLButtonElement>(null);
   const reducedMotion = useReducedMotion();
   const { scrollY } = useScroll();
 
-  useMotionValueEvent(scrollY, "change", (latest) => setScrolled(latest > 24));
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    setScrolled(latest > 24);
+    const delta = latest - lastY.current;
+    lastY.current = latest;
+    if (reducedMotion || open || latest < 160) setHidden(false);
+    else if (delta > 6) setHidden(true);
+    else if (delta < -6) setHidden(false);
+  });
 
   useEffect(() => {
     setScrolled(window.scrollY > 24);
@@ -293,8 +309,9 @@ export function Header() {
     <motion.header
       className={`site-header${scrolled ? " is-scrolled" : ""}${open ? " is-open" : ""}`}
       initial={reducedMotion ? false : { y: "-100%", opacity: 0 }}
-      animate={{ y: "0%", opacity: 1 }}
-      transition={{ duration: 0.9, ease: EASE, delay: 0.1 }}
+      animate={{ y: hidden ? "-100%" : "0%", opacity: 1 }}
+      transition={{ duration: 0.6, ease: EASE }}
+      onFocusCapture={() => setHidden(false)}
     >
       <div className="shell header-inner">
         <a
