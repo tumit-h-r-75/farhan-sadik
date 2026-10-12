@@ -96,7 +96,13 @@ export interface Profile {
     education: { institution: string; degree: string; years: string; note?: string }[];
     community: { name: string; role: string; association: string }[];
   };
-  strengths: { heading: string; rotating: string[]; intro: string; items: Strength[] };
+  strengths: {
+    heading: string;
+    rotating: string[];
+    intro: string;
+    items: Strength[];
+    image: { src: string; alt: string; width: number; height: number };
+  };
   services: { heading: Heading; intro: string; items: ServiceItem[] };
   experience: {
     heading: Heading;
@@ -236,6 +242,12 @@ export const PROFILE: Profile = {
         icon: "business",
       },
     ],
+    image: {
+      src: "/images/farhan-profile.webp",
+      alt: "Black-and-white side profile of Farhan Sadik Susmit, looking towards the light",
+      width: 900,
+      height: 1120,
+    },
   },
   services: {
     heading: { lead: "Your next project.", dim: "Scoped clearly." },

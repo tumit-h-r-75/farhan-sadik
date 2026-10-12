@@ -31,8 +31,7 @@ import { PROFILE, isKnown } from "@/data/profile";
 import BlurText from "@/components/react-bits/BlurText";
 import Counter from "@/components/react-bits/Counter";
 import GlareHover from "@/components/react-bits/GlareHover";
-import LightRays from "@/components/react-bits/LightRays";
-import MagicBento from "@/components/react-bits/MagicBento";
+import Aurora from "@/components/react-bits/Aurora";
 import Noise from "@/components/react-bits/Noise";
 import RotatingText from "@/components/react-bits/RotatingText";
 import ScrollReveal from "@/components/react-bits/ScrollReveal";
@@ -58,8 +57,8 @@ import {
 } from "./Chrome";
 
 // Accent colours, mirrored from the tokens in src/portfolio.css.
-const ACCENT = "#c8471f"; // terracotta, on paper
-const ACCENT_BRIGHT = "#ff8a5c"; // the same hue, lifted for the charcoal bands
+const ACCENT = "#42089e"; // primary purple, on paper
+const ACCENT_BRIGHT = "#a77bff"; // the same purple, lifted for the navy bands
 
 const serviceIcons = { code: CodeXml, database: Database, globe: Globe, cloud: Cloud, bot: Bot };
 const processIcons = { call: MessagesSquare, proposal: FileText, kickoff: Handshake, updates: RefreshCw };
@@ -74,16 +73,16 @@ const strengthIcons = {
 
 // Stepper theme variables, matched to the paper palette.
 const stepperTheme = {
-  "--stepper-frame": "rgba(251, 249, 245, 0.9)",
-  "--stepper-frame-edge": "rgba(23, 22, 20, 0.12)",
+  "--stepper-frame": "rgba(252, 251, 255, 0.92)",
+  "--stepper-frame-edge": "rgba(20, 16, 40, 0.12)",
   "--stepper-frame-highlight": "rgba(255, 255, 255, 0.9)",
-  "--stepper-frame-shadow": "0 30px 60px -36px rgba(40, 30, 20, 0.35)",
-  "--stepper-tile": "linear-gradient(180deg, #ffffff 0%, #f6f2ea 100%)",
-  "--stepper-tile-edge": "rgba(23, 22, 20, 0.1)",
-  "--stepper-well": "rgba(23, 22, 20, 0.05)",
-  "--stepper-ink": "#17161a",
-  "--stepper-muted": "rgba(23, 22, 26, 0.66)",
-  "--stepper-faint": "rgba(23, 22, 26, 0.22)",
+  "--stepper-frame-shadow": "0 30px 60px -36px rgba(40, 20, 90, 0.3)",
+  "--stepper-tile": "linear-gradient(180deg, #ffffff 0%, #f3f1fa 100%)",
+  "--stepper-tile-edge": "rgba(20, 16, 40, 0.1)",
+  "--stepper-well": "rgba(20, 16, 40, 0.05)",
+  "--stepper-ink": "#14121f",
+  "--stepper-muted": "rgba(20, 18, 31, 0.66)",
+  "--stepper-faint": "rgba(20, 18, 31, 0.22)",
 } as CSSProperties;
 
 /** Scroll-linked depth for the hero, on wide screens with normal motion only. */
@@ -117,18 +116,20 @@ function Hero() {
   const parallax = useHeroParallax();
   return (
     <section className="hero band-ink" aria-label="Introduction">
-      <div className="hero-rays" aria-hidden="true">
-        <LightRays
-          raysOrigin="top-center"
-          raysColor="#ffb08a"
-          raysSpeed={0.9}
-          lightSpread={1.15}
-          rayLength={2.2}
-          fadeDistance={1.3}
-          followMouse
-          mouseInfluence={0.12}
-          noiseAmount={0.05}
-          distortion={0.06}
+      <div className="hero-aurora" aria-hidden="true">
+        <Aurora
+          colorStops={["#42089e", "#3b5bff", "#8b5cf6"]}
+          amplitude={1.15}
+          blend={0.6}
+          speed={0.7}
+          height={0.44}
+          glow={0.85}
+          brightness={1.15}
+          layers={2}
+          direction="top"
+          mouseInteraction
+          intro
+          dpr={1}
         />
       </div>
       <div className="shell hero-grid">
@@ -155,7 +156,7 @@ function Hero() {
               <span className="pulse-dot" aria-hidden="true" />
               <ShinyText
                 text={`${PROFILE.role} at ${PROFILE.company}`}
-                color="#cfcac2"
+                color="#cfcde3"
                 shineColor="#ffffff"
                 speed={2.6}
                 delay={2}
@@ -193,7 +194,7 @@ function Hero() {
                 backgroundColor="var(--accent)"
                 textColor="#ffffff"
                 borderColor="rgba(255, 255, 255, 0.16)"
-                color="#ffe1d3"
+                color="#efe6ff"
                 trailColor={ACCENT_BRIGHT}
                 radius={6}
                 thickness={2}
@@ -295,64 +296,76 @@ function About() {
 }
 
 function Strengths() {
-  const { heading, rotating, intro, items } = PROFILE.strengths;
+  const { heading, rotating, intro, items, image } = PROFILE.strengths;
   const rotatingRef = useRef<HTMLSpanElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
   const inView = useInView(rotatingRef, { amount: 0.8 });
   const reducedMotion = useReducedMotion();
-  const cards = items.map((item) => {
-    const Icon = strengthIcons[item.icon];
-    return {
-      color: "#16171c",
-      label: item.label,
-      title: item.title,
-      description: item.text,
-      icon: <Icon size={20} strokeWidth={1.5} aria-hidden="true" />,
-    };
-  });
+  const { scrollYProgress } = useScroll({ target: gridRef, offset: ["start end", "end start"] });
+  const imageY = useTransform(scrollYProgress, [0, 1], [-40, 40]);
+  const imageScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.14, 1.04, 1.1]);
   return (
-    <RailSection id="strengths" number="02" label="Strengths" className="strengths">
-      <div className="section-head">
-        <h2 className="split-heading">
-          <BlurText text={heading} delay={70} direction="bottom" stepDuration={0.3} />{" "}
-          <span ref={rotatingRef} className="dim strengths-rotating">
-            {reducedMotion ? (
-              rotating[0]
-            ) : (
-              <RotatingText
-                texts={rotating}
-                auto={inView}
-                loop={false}
-                rotationInterval={2400}
-                splitBy="characters"
-                staggerDuration={0.018}
-                staggerFrom="first"
-                transition={{ type: "spring", damping: 28, stiffness: 320 }}
-                mainClassName="strengths-rotating-text"
-                splitLevelClassName="strengths-rotating-word"
-              />
-            )}
-          </span>
-        </h2>
-        <Reveal delay={0.1}>
-          <p>{intro}</p>
-        </Reveal>
+    <RailSection id="strengths" number="02" label="Strengths" className="strengths band-ink" bright>
+      <div ref={gridRef} className="strengths-grid">
+        <div className="strengths-head">
+          <h2 className="split-heading">
+            <BlurText text={heading} delay={70} direction="bottom" stepDuration={0.3} />{" "}
+            <span ref={rotatingRef} className="dim strengths-rotating">
+              {reducedMotion ? (
+                rotating[0]
+              ) : (
+                <RotatingText
+                  texts={rotating}
+                  auto={inView}
+                  loop={false}
+                  rotationInterval={2400}
+                  splitBy="characters"
+                  staggerDuration={0.018}
+                  staggerFrom="first"
+                  transition={{ type: "spring", damping: 28, stiffness: 320 }}
+                  mainClassName="strengths-rotating-text"
+                />
+              )}
+            </span>
+          </h2>
+          <Reveal delay={0.1}>
+            <p>{intro}</p>
+          </Reveal>
+        </div>
+        <figure className="strengths-figure">
+          <span className="strengths-light" aria-hidden="true" />
+          <motion.img
+            src={image.src}
+            alt={image.alt}
+            width={image.width}
+            height={image.height}
+            decoding="async"
+            style={reducedMotion ? undefined : { y: imageY, scale: imageScale }}
+          />
+        </figure>
+        <ol className="strengths-list">
+          {items.map((item, index) => {
+            const Icon = strengthIcons[item.icon];
+            return (
+              <li key={item.title} className="strength">
+                <Reveal delay={0.04}>
+                  <div className="strength-head">
+                    <span className="strength-number" aria-hidden="true">
+                      0{index + 1}
+                    </span>
+                    <span className="strength-label">{item.label}</span>
+                    <span className="strength-icon" aria-hidden="true">
+                      <Icon size={18} strokeWidth={1.5} />
+                    </span>
+                  </div>
+                  <h3>{item.title}</h3>
+                  <p>{item.text}</p>
+                </Reveal>
+              </li>
+            );
+          })}
+        </ol>
       </div>
-      <Reveal>
-        <MagicBento
-          cards={cards}
-          className="strengths-bento"
-          textAutoHide={false}
-          enableStars
-          enableSpotlight
-          enableBorderGlow
-          enableTilt
-          enableMagnetism
-          clickEffect
-          spotlightRadius={340}
-          particleCount={16}
-          glowColor="255, 138, 92"
-        />
-      </Reveal>
     </RailSection>
   );
 }
@@ -507,7 +520,7 @@ function Experience() {
                   background="var(--card)"
                   borderColor="var(--line)"
                   borderRadius="12px"
-                  glareColor="#c8471f"
+                  glareColor="#42089e"
                   glareOpacity={0.16}
                   glareSize={60}
                   variant="sheen"
@@ -589,7 +602,7 @@ function Company() {
       <div className="company-threads" aria-hidden="true">
         <Threads
           color={ACCENT_BRIGHT}
-          accentColor="#f3efe7"
+          accentColor="#6f8cff"
           amplitude={1.7}
           distance={0.36}
           lineCount={80}
@@ -666,7 +679,7 @@ function Process() {
       className="process"
       background={
         <Waves
-          lineColor="rgba(200, 71, 31, 0.16)"
+          lineColor="rgba(66, 8, 158, 0.16)"
           backgroundColor="transparent"
           waveSpeedX={0.016}
           waveSpeedY={0.006}
@@ -832,7 +845,7 @@ export default function Portfolio() {
         Skip to content
       </a>
       <Header />
-      <Noise fixed opacity={0.06} fps={10} blendMode="overlay" contrast={0.55} zIndex={70} />
+      <Noise fixed opacity={0.02} fps={8} blendMode="overlay" contrast={0.45} zIndex={70} />
       <TargetCursor
         targetSelector="a, button, summary, select, input, textarea"
         cursorColor="#ffffff"

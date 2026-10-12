@@ -4,7 +4,7 @@ A single-page portfolio for Farhan Sadik Susmit, Business Development Executive 
 
 Sections: hero, About (with skills and education), What I bring (strengths), Services, Experience (with role highlights and recent LinkedIn posts), the Exprovia band, Process, FAQ and Contact.
 
-The design is editorial: warm paper sections, charcoal bands sampled from the portrait's studio backdrop, Instrument Serif headings, Manrope body text, DM Mono labels and a single terracotta accent.
+The design is editorial: cool paper sections, dark navy bands, Instrument Serif headings, Manrope body text, DM Mono labels and #42089E purple as the primary colour (taken with the navy from Farhan's LinkedIn banner). The hero has a slow purple-and-blue aurora, and the "What I bring" section pairs a numbered list with a pinned, black-and-white side profile that drifts as you scroll.
 
 Motion: on tall desktop screens the hero stays pinned while the About section slides over it as a rounded sheet (with light parallax and dimming), the portrait wipes in, a light travels around the main button, the Exprovia band has flowing threads, Process has a cursor-reactive line field, and a faint film grain sits over the page. The header hides while scrolling down and returns when scrolling up. On desktop a bracket cursor locks onto links and buttons, the hero name reveals letter by letter, the section numbers carry a flowing gradient, and Exprovia's figures roll like an odometer. Everything falls back to still frames for visitors who prefer reduced motion.
 
@@ -22,7 +22,7 @@ With the dev server running, check the site in a real browser:
 node scripts/verify-portfolio.mjs
 ```
 
-The check uses the installed Microsoft Edge through Playwright. It covers the page structure, navigation and anchors, the strength cards, education notes, LinkedIn posts and FAQ, reduced motion, the portrait, the service → contact flow, form validation, the project-brief dialog (clipboard, WhatsApp, email and LinkedIn links, Escape and backdrop closing, focus return), the experience disclosures, the process stepper, the mobile menu, back to top, horizontal overflow from 1440px down to 320px, broken images, console errors, and with normal motion the pinned hero, header hide/show, the rotating heading, bento particles and every animated canvas. Screenshots go to `.qa/` (ignored by git). Set `PORTFOLIO_URL` to test another address.
+The check uses the installed Microsoft Edge through Playwright. It covers the page structure, navigation and anchors, the strengths list and profile photo, education notes, LinkedIn posts and FAQ, reduced motion, the portrait, the service → contact flow, form validation, the project-brief dialog (clipboard, WhatsApp, email and LinkedIn links, Escape and backdrop closing, focus return), the experience disclosures, the process stepper, the mobile menu, back to top, horizontal overflow from 1440px down to 320px, broken images, console errors, and with normal motion the pinned hero, header hide/show, the rotating heading, the pinned drifting photo and every animated canvas. Screenshots go to `.qa/` (ignored by git). Set `PORTFOLIO_URL` to test another address.
 
 ## Where things live
 
@@ -30,7 +30,8 @@ The check uses the installed Microsoft Edge through Playwright. It covers the pa
 - `components/portfolio/` — the page (`Portfolio.tsx`), header and shared pieces (`Chrome.tsx`), and the contact section with the brief dialog (`ContactSection.tsx`).
 - `components/react-bits/` — the React Bits components, their license, and what was adapted (`README.md`).
 - `src/portfolio.css` — the visual system. Colour, type and spacing tokens are at the top in `:root`.
-- `public/images/` — the portrait as WebP (`farhan-portrait.webp`, 800px; `farhan-avatar.webp`, 160px). The original photo is `1779020536870.jfif` in the project root.
+- `public/images/` — photos as WebP: `farhan-portrait.webp` (hero, 800px), `farhan-avatar.webp` (header, 160px) and `farhan-profile.webp` (side profile in "What I bring", 900px), plus `exprovia-logo.png`.
+- `assets/originals/` — full-size originals that are not served with the site (the side profile PNG). The first portrait's original is in git history (commit `5a2830b`).
 - `index.html` — title, description, Open Graph/Twitter tags, fonts and favicon.
 
 ## Content rules

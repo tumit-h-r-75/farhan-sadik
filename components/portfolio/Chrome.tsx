@@ -96,7 +96,7 @@ export function SectionLabel({
     <p className="section-label">
       <span className="section-label-number" aria-hidden="true">
         <GradientText
-          colors={bright ? ["#ff8a5c", "#ffd0b8", "#ff6a3d"] : ["#c8471f", "#ff8a5c", "#a63a16"]}
+          colors={bright ? ["#a77bff", "#e4d8ff", "#6f8cff"] : ["#42089e", "#8b5cf6", "#2a3bb8"]}
           animationSpeed={5}
           direction="diagonal"
           scale={2}
@@ -124,6 +124,7 @@ export function RailSection({
   label,
   className = "",
   background,
+  bright = false,
   children,
 }: {
   id: string;
@@ -131,6 +132,7 @@ export function RailSection({
   label: string;
   className?: string;
   background?: ReactNode;
+  bright?: boolean;
   children: ReactNode;
 }) {
   return (
@@ -142,7 +144,9 @@ export function RailSection({
       )}
       <div className="shell rail-grid">
         <div className="rail">
-          <SectionLabel number={number}>{label}</SectionLabel>
+          <SectionLabel number={number} bright={bright}>
+            {label}
+          </SectionLabel>
         </div>
         <div className="rail-content">{children}</div>
       </div>

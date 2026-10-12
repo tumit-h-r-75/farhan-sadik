@@ -107,10 +107,18 @@ try {
   checkpoint("page, title, sections, navigation, anchors, JSON-LD, footer socials and no visible TODOs");
 
   // Informative sections: strengths, education notes, role highlights, posts, FAQ.
-  const bentoCards = page.locator(".strengths-bento .magic-bento-card");
-  assert.equal(await bentoCards.count(), 6, "Expected six strength cards");
-  assert.equal(await bentoCards.locator("h3").count(), 6);
-  assert.match(await bentoCards.nth(2).innerText(), /direct line to the build team/i);
+  const strengths = page.locator(".strengths-list .strength");
+  assert.equal(await strengths.count(), 6, "Expected six strengths");
+  assert.equal(await strengths.locator("h3").count(), 6);
+  assert.match(await strengths.nth(2).innerText(), /direct line to the build team/i);
+  const profileImage = page.locator(".strengths-figure img");
+  await profileImage.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(200);
+  assert.ok(
+    await profileImage.evaluate((image) => image.complete && image.naturalWidth === 900),
+    "Profile photo did not load",
+  );
+  assert.match(await profileImage.getAttribute("alt"), /side profile of Farhan Sadik Susmit/);
   assert.match(await page.locator(".strengths-rotating").innerText(), /to your first call\./);
   assert.equal(await page.locator(".education-note").count(), 2);
   assert.match(await page.locator("#education").innerText(), /C programming and HTML/);
@@ -338,7 +346,7 @@ try {
   const initial = await cueTransform();
   await animatedPage.waitForTimeout(300);
   assert.notEqual(await cueTransform(), initial, "Scroll cue animation is not advancing");
-  assert.equal(await animatedPage.locator(".hero-rays canvas").count(), 1, "LightRays canvas missing");
+  assert.equal(await animatedPage.locator(".hero-aurora canvas").count(), 1, "Aurora canvas missing");
   assert.equal(
     await animatedPage.locator(".hero-lead").evaluate((element) => getComputedStyle(element.parentElement).opacity),
     "1",
@@ -394,7 +402,7 @@ try {
   assert.ok((await headerBottom()) > 40, "Header did not return on scroll up");
   checkpoint("hero pinned, StarBorder, grain and custom cursor work, header hides on scroll down and returns on scroll up");
 
-  // Strengths: the heading rotates once it is in view, and the bento cards glow near the cursor.
+  // Strengths: the heading rotates once it is in view; the photo stays pinned and drifts with scroll.
   await animatedPage.locator("#strengths .split-heading").scrollIntoViewIfNeeded();
   await animatedPage.waitForTimeout(3200);
   assert.doesNotMatch(
@@ -402,14 +410,24 @@ try {
     /first call/,
     "Strengths heading did not rotate",
   );
-  const bigCard = animatedPage.locator(".strengths-bento .magic-bento-card").nth(2);
-  await bigCard.scrollIntoViewIfNeeded();
-  const cardBox = await bigCard.boundingBox();
-  await animatedPage.mouse.move(cardBox.x + cardBox.width / 2, cardBox.y + cardBox.height / 2, { steps: 8 });
-  await animatedPage.waitForTimeout(1200);
-  assert.ok((await bigCard.locator(".particle").count()) > 0, "Bento particles did not appear on hover");
-  await animatedPage.screenshot({ path: artifact("desktop-strengths-hover.png") });
-  await animatedPage.mouse.move(5, 5);
+  const figure = animatedPage.locator(".strengths-figure");
+  assert.equal(await figure.evaluate((element) => getComputedStyle(element).position), "sticky");
+  // Scroll to 150px past the start of the grid, where the photo is pinned.
+  await animatedPage.evaluate(() => {
+    const grid = document.querySelector(".strengths-grid");
+    window.scrollTo(0, grid.getBoundingClientRect().top + window.scrollY + 150);
+  });
+  await animatedPage.waitForTimeout(500);
+  const transformA = await figure.locator("img").evaluate((element) => getComputedStyle(element).transform);
+  const topA = (await figure.boundingBox()).y;
+  await animatedPage.screenshot({ path: artifact("desktop-strengths-animated.png") });
+  await animatedPage.evaluate(() => window.scrollBy(0, 300));
+  await animatedPage.waitForTimeout(500);
+  const transformB = await figure.locator("img").evaluate((element) => getComputedStyle(element).transform);
+  const topB = (await figure.boundingBox()).y;
+  assert.notEqual(transformA, transformB, "Profile photo did not drift with scroll");
+  assert.ok(Math.abs(topA - topB) < 2, "Profile photo did not stay pinned");
+  await animatedPage.screenshot({ path: artifact("desktop-strengths-animated-2.png") });
 
   await animatedPage.locator("#exprovia").scrollIntoViewIfNeeded();
   await animatedPage.waitForTimeout(900);
@@ -432,7 +450,7 @@ try {
   await animatedPage.screenshot({ path: artifact("desktop-contact-animated.png") });
   assert.deepEqual(issues, [], "Browser console or runtime errors with normal motion");
   await animatedContext.close();
-  checkpoint("normal motion: rotating heading, bento particles, Threads, Waves and Particles render, no errors");
+  checkpoint("normal motion: aurora, rotating heading, pinned drifting photo, Threads, Waves and Particles render, no errors");
 
   console.log("All checks passed. Screenshots saved to .qa/");
 } finally {

@@ -97,7 +97,7 @@ export function ContactSection({
     <section id="contact" className="section contact band-ink">
       <div className="contact-particles" aria-hidden="true">
         <Particles
-          particleColors={["#ff8a5c", "#f6f2ea", "#a39f98"]}
+          particleColors={["#a77bff", "#f2f1fa", "#6f8cff"]}
           particleCount={340}
           particleSpread={10}
           speed={0.1}
@@ -129,7 +129,7 @@ export function ContactSection({
                   background="var(--ink-2)"
                   borderColor="var(--ink-line)"
                   borderRadius="12px"
-                  glareColor="#ff8a5c"
+                  glareColor="#a77bff"
                   glareOpacity={0.3}
                   glareSize={45}
                   variant="sheen"
