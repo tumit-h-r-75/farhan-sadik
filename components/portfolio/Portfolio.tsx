@@ -333,7 +333,6 @@ function Strengths() {
           </Reveal>
         </div>
         <figure className="strengths-figure">
-          <span className="strengths-light" aria-hidden="true" />
           <motion.img
             src={image.src}
             alt={image.alt}

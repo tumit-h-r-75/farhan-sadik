@@ -1624,8 +1624,7 @@ a:hover > .link-arrow {
   color: #ffffff;
 }
 /* The photo stays in view while the list scrolls past it. Its black studio
-   background is blended into the navy, and a purple light sits where the
-   original light source was, so he looks towards it. */
+   background is blended into the navy. */
 .strengths-figure {
   position: sticky;
   top: 96px;
@@ -1653,18 +1652,6 @@ a:hover > .link-arrow {
   object-fit: cover;
   object-position: 62% 30%;
   mix-blend-mode: lighten;
-}
-.strengths-light {
-  position: absolute;
-  top: 18%;
-  left: -18%;
-  z-index: 0;
-  width: 80%;
-  height: 42%;
-  border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(150, 100, 255, 0.75), rgba(66, 8, 158, 0.35) 55%, transparent);
-  filter: blur(6px);
-  animation: breathe 8s ease-in-out infinite;
 }
 
 /* ---------- Experience details and posts ---------- */
@@ -2199,7 +2186,6 @@ dialog[open] :is(a, button, select, label) {
 
 @media (prefers-reduced-motion: reduce) {
   .portrait-glow,
-  .strengths-light,
   .pulse-dot::after,
   .scroll-cue-line span,
   .company::before,
